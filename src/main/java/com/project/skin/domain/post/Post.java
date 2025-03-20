@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import java.time.LocalDateTime;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,10 +19,10 @@ public class Post extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long postId;
 
-    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, orphanRemoval = true)
     private List<File> files = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -43,9 +43,29 @@ public class Post extends BaseTimeEntity {
     private Long viewCount;
 
     @Column(nullable = false)
-    private Integer likes;
+    private Integer likeCount;
 
-    private LocalDateTime deletedAt;
+    private Post(User user, Category category, String title, String content) {
+        this.user = user;
+        this.category = category;
+        this.title = title;
+        this.content = content;
+        this.viewCount = 0L;
+        this.likeCount = 0;
+    }
 
+    public static Post of(User user, Category category, String title, String content) {
+        return new Post(user, category, title, content);
+    }
+
+    public void updatePost(Category category, String title, String content) {
+        this.category = category;
+        this.title = title;
+        this.content = content;
+    }
+
+    public void updateLikeCount(int likeChange) {
+        this.likeCount += likeChange;
+    }
 
 }
