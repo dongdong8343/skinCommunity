@@ -8,7 +8,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,10 +19,10 @@ public class User extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Post> posts = new ArrayList<>();
 
     @Column(length = 30, nullable = false)
@@ -40,9 +39,6 @@ public class User extends BaseTimeEntity {
 
     @Column(length = 20, nullable = false)
     private String nickname;
-
-    @Column(nullable = false)
-    private LocalDateTime deletedAt;
 
     private User(String type, String email, String password, String name, String nickname) {
         this.type = type;
@@ -61,9 +57,5 @@ public class User extends BaseTimeEntity {
         if(nickname != null) this.nickname = nickname;
 
         return this;
-    }
-
-    public void delete() {
-        this.deletedAt = LocalDateTime.now();
     }
 }
