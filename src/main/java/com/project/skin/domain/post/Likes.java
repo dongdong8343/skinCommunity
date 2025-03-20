@@ -21,4 +21,13 @@ public class Likes {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
+
+    private Likes(User user, Post post) {
+        this.user = user;
+        this.post = post;
+    }
+
+    public static Likes of(User user, Post post) {
+        return new Likes(user, post);
+    }
 }
