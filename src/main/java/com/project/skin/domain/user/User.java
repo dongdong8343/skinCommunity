@@ -56,22 +56,9 @@ public class User extends BaseTimeEntity {
         return new User(type, email, password, name, nickname);
     }
 
-    // 아래 메서드처럼 구체적으로 구현하는게 좋을까요? 아니면 오버라이딩을 통해 메서드 명을 통일하는 것이 좋을까요?
-    public User updatePassword(String password) {
-        this.password = password;
-
-        return this;
-    }
-
-    public User updateNickname(String nickname) {
-        this.nickname = nickname;
-
-        return this;
-    }
-
     public User updateUser(String password, String nickname) {
-        this.password = password;
-        this.nickname = nickname;
+        if(password != null) this.password = password;
+        if(nickname != null) this.nickname = nickname;
 
         return this;
     }
