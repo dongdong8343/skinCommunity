@@ -22,7 +22,7 @@ public class Category extends BaseTimeEntity {
     private Category parent;
 
     @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<Category> child = new ArrayList<>();
+    private List<Category> children = new ArrayList<>();
 
     @Column(length = 20, nullable = false)
     private String code;
@@ -30,15 +30,15 @@ public class Category extends BaseTimeEntity {
     @Column(nullable = false)
     private String name;
 
-    private Category(Category parent, String code, String name) {
-        this.parent = parent;
+    private Category(String code, String name) {
         this.code = code;
         this.name = name;
     }
 
-    private Category(String code, String name) {
-        this.code = code;
-        this.name = name;
+
+    private Category(Category parent, String code, String name) {
+        this(code,name);
+        this.parent = parent;
     }
 
     // 카테고리 생성

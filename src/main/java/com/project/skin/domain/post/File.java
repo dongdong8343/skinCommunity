@@ -23,7 +23,7 @@ public class File extends BaseTimeEntity {
     private String fileName;
 
     @Column(nullable = false)
-    private String orgName;
+    private String originalName;
 
     @Column(nullable = false)
     private String url;
@@ -40,10 +40,10 @@ public class File extends BaseTimeEntity {
     @Column(nullable = false)
     private String fileType;
 
-    private File(Post post, String fileName, String orgName, String url, String filePath, String bucketName, Long fileSize, String fileType) {
+    private File(Post post, String fileName, String originalName, String url, String filePath, String bucketName, Long fileSize, String fileType) {
         this.post = post;
         this.fileName = fileName;
-        this.orgName = orgName;
+        this.originalName = originalName;
         this.url = url;
         this.filePath = filePath;
         this.bucketName = bucketName;
