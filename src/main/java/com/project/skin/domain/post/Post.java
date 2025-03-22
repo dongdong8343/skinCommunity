@@ -1,14 +1,11 @@
 package com.project.skin.domain.post;
 
 import com.project.skin.domain.BaseTimeEntity;
-import com.project.skin.domain.category.Category;
-import com.project.skin.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -17,55 +14,52 @@ import java.util.List;
 public class Post extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long postId;
+    private Long id;
 
-    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<Comment> comments = new ArrayList<>();
-
-    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<File> files = new ArrayList<>();
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id", nullable = false)
-    private Category category;
-
-    @Column(length = 255, nullable = false)
+    @Column(nullable = false)
     private String title;
 
     @Column(columnDefinition = "LONGTEXT", nullable = false)
     private String content;
 
     @Column(nullable = false)
-    private Long viewCount;
+    private Long viewCount = 0L;
 
     @Column(nullable = false)
-    private Integer likeCount;
+    private Long likeCount = 0L;
 
-    private Post(User user, Category category, String title, String content) {
-        this.user = user;
-        this.category = category;
+    @Column(nullable = false)
+    private Long userId;
+
+    @Column(nullable = false)
+    private Long categoryId;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id")
+    private List<Comment> comments;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "file_id")
+    private List<File> files;
+
+    private Post(String title, String content, Long viewCount, Long likeCount, Long userId, Long categoryId, List<Comment> comments, List<File> files) {
         this.title = title;
         this.content = content;
-        this.viewCount = 0L;
-        this.likeCount = 0;
+        this.viewCount = viewCount;
+        this.likeCount = likeCount;
+        this.userId = userId;
+        this.categoryId = categoryId;
+        this.comments = comments;
+        this.files = files;
     }
 
-    public static Post of(User user, Category category, String title, String content) {
-        return new Post(user, category, title, content);
+    public static Post create(String title, String content, Long viewCount, Long likeCount, Long userId, Long categoryId, List<Comment> comments, List<File> files) {
+        return new Post(title, content, viewCount, likeCount, userId, categoryId, comments, files);
     }
 
-    public void updatePost(Category category, String title, String content) {
-        this.category = category;
+    public void updatePost(String title, String content, Long categoryId) {
         this.title = title;
         this.content = content;
+        this.categoryId = categoryId;
     }
-
-    public void updateLikeCount(int likeChange) {
-        this.likeCount += likeChange;
-    }
-
 }
