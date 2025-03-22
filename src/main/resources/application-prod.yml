@@ -1,7 +1,0 @@
-spring:
-  datasource:
-    #mysql
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/skin_community?&serverTimezone=Asia/Seoul
-    username: root
-    password: asdfpo45
