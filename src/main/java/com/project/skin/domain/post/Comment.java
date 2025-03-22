@@ -16,43 +16,39 @@ import java.util.List;
 public class Comment extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long commentId;
+    private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private Long userId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id", nullable = false)
-    private Post post;
+    private Long postId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comment_id")
     private Comment parent;
 
-    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<Comment> child = new ArrayList<>();
+    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
+    private List<Comment> children = new ArrayList<>();
 
     @Column(nullable = false)
     private String content;
 
-    @Column(nullable = false) // 앞에 놈 알아야 할 듯
+    @Column(nullable = false)
     private Integer depth;
 
-    @Column(nullable = false) // 앞에 놈 알아야 할 듯
+    @Column(nullable = false)
     private Integer commentOrder;
 
-    private Comment(User user, Post post, String content, Integer depth, Integer commentOrder) {
-        this.user = user;
-        this.post = post;
+    private Comment(Long userId, Long postId, String content, Integer depth, Integer commentOrder) {
+        this.userId = userId;
+        this.postId = postId;
         this.content = content;
         this.depth = depth;
         this.commentOrder = commentOrder;
     }
 
-    private Comment(User user, Post post, Comment parent, String content, Integer depth, Integer commentOrder) {
-        this.user = user;
-        this.post = post;
+    private Comment(Long userId, Long postId, Comment parent, String content, Integer depth, Integer commentOrder) {
+        this.userId = userId;
+        this.postId = postId;
         this.parent = parent;
         this.content = content;
         this.depth = depth;
@@ -60,13 +56,13 @@ public class Comment extends BaseTimeEntity {
     }
 
     // 댓글 생성
-    public static Comment ofComment(User user, Post post, String content, Integer depth, Integer commentOrder) {
-        return new Comment(user, post, content, depth, commentOrder);
+    public static Comment createComment(Long userId, Long postId, String content, Integer depth, Integer commentOrder) {
+        return new Comment(userId, postId, content, depth, commentOrder);
     }
 
     // 대댓글 생성
-    public static Comment ofSubComment(User user, Post post, Comment parent, String content, Integer depth, Integer commentOrder) {
-        return new Comment(user, post, parent, content, depth, commentOrder);
+    public static Comment createSubComment(Long userId, Long postId, Comment parent, String content, Integer depth, Integer commentOrder) {
+        return new Comment(userId, postId, parent, content, depth, commentOrder);
     }
 
     public void update(String content) {
