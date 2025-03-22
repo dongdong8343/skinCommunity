@@ -13,17 +13,13 @@ import lombok.NoArgsConstructor;
 public class File extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long fileId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id", nullable = false)
-    private Post post;
+    private Long id;
 
     @Column(nullable = false)
     private String fileName;
 
     @Column(nullable = false)
-    private String orgName;
+    private String originalName;
 
     @Column(nullable = false)
     private String url;
@@ -40,10 +36,9 @@ public class File extends BaseTimeEntity {
     @Column(nullable = false)
     private String fileType;
 
-    private File(Post post, String fileName, String orgName, String url, String filePath, String bucketName, Long fileSize, String fileType) {
-        this.post = post;
+    private File(String fileName, String originalName, String url, String filePath, String bucketName, Long fileSize, String fileType) {
         this.fileName = fileName;
-        this.orgName = orgName;
+        this.originalName = originalName;
         this.url = url;
         this.filePath = filePath;
         this.bucketName = bucketName;
@@ -51,7 +46,7 @@ public class File extends BaseTimeEntity {
         this.fileType = fileType;
     }
 
-    public static File of(Post post, String fileName, String orgName, String url, String filePath, String bucketName, Long fileSize, String fileType) {
-        return new File(post, fileName, orgName, url, filePath, bucketName, fileSize, fileType);
+    public static File of(String fileName, String originalName, String url, String filePath, String bucketName, Long fileSize, String fileType) {
+        return new File(fileName, originalName, url, filePath, bucketName, fileSize, fileType);
     }
 }
