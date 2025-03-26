@@ -48,6 +48,10 @@ public class User extends BaseTimeEntity implements UserDetails { // 인증 객�
         return new User(type, email, password, nickname);
     }
 
+    public static User createBasicUser(String email, String password, String nickname) {
+        return create(LoginType.BASIC, email, password, nickname);
+    }
+
     public void updateUser(String password, String nickname) {
         if(password != null) {
             this.password = password;
