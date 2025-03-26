@@ -1,6 +1,6 @@
 package com.project.skin.service;
 
-import com.project.skin.repository.UserRepository;
+import com.project.skin.provider.UserProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -11,11 +11,10 @@ import org.springframework.stereotype.Service;
 @Service
 // 스프링 시큐리티에서 사용자 정보 가져오는 인터페이스
 public class UserDetailService implements UserDetailsService {
-    private final UserRepository userRepository;
+    private final UserProvider userProvider;
 
     @Override // 사용자 이름으로 사용자 정보 가져옴.
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return userRepository.findByEmail(email)
-                .orElseThrow(IllegalArgumentException::new);
+        return userProvider.loadUserByEmail(email);
     }
 }
