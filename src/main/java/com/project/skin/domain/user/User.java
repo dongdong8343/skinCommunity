@@ -5,13 +5,18 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class User extends BaseTimeEntity {
+public class User extends BaseTimeEntity implements UserDetails { // 인증 객체로 사용
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -51,5 +56,37 @@ public class User extends BaseTimeEntity {
         if(nickname != null) {
             this.nickname = nickname;
         }
+    }
+
+    @Override // 계정 만료 여부 반환
+    public boolean isAccountNonExpired() {
+        return true; // true -> 만료 x
+    }
+
+    @Override // 계정 잠금 여부 반환
+    public boolean isAccountNonLocked() {
+        return true; // true -> 만료 x
+    }
+
+    @Override // 패스워드 만료 여부 반환
+    public boolean isCredentialsNonExpired() {
+        return true; // true -> 만료 x
+    }
+
+    @Override // 계정 사용 여부 반환
+    public boolean isEnabled() {
+        return true; // true -> 만료 x
+    }
+
+    @Override // 권한 반환
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return userRoles.stream()
+                .map(role -> new SimpleGrantedAuthority(role.getRole().getKey()))
+                .collect(Collectors.toList());
+    }
+
+    @Override // 사용자 id 반환
+    public String getUsername() {
+        return this.email;
     }
 }
