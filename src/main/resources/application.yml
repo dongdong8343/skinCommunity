@@ -1,6 +1,11 @@
 spring:
   application:
     name: skin
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    cache: false
+    check-template-location: true
   jpa:
     hibernate:
       ddl-auto: update
