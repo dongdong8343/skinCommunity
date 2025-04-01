@@ -1,22 +1,50 @@
 package com.project.skin.provider;
 
+import com.project.skin.config.error.exception.UserNotFoundException;
+import com.project.skin.domain.user.Role;
 import com.project.skin.domain.user.User;
+import com.project.skin.domain.user.UserRole;
 import com.project.skin.repository.UserRepository;
+import com.project.skin.repository.UserRoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
-@Component
 @RequiredArgsConstructor
+@Transactional
+@Component
 public class UserProvider {
     private final UserRepository userRepository;
+    private final UserRoleRepository userRoleRepository;
 
     public UserDetails loadUserByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(UserNotFoundException::new);
     }
 
-    public User save(User user) {
-        return userRepository.save(user);
+    public User loadUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
+    }
+
+    public boolean checkEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    public boolean checkNickname(String nickname) {
+        return userRepository.existsByNickname(nickname);
+    }
+
+    public User createUser(User user, UserRole userRole) {
+        userRepository.save(user);
+        userRoleRepository.save(userRole);
+
+        return user;
+    }
+
+    public void grantAdminUser(UserRole userRole) {
+        userRoleRepository.save(userRole);
     }
 }
+
