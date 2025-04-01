@@ -1,4 +1,4 @@
-package com.project.skin.config;
+package com.project.skin.config.auth;
 
 import com.project.skin.service.UserDetailService;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +12,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -26,13 +25,12 @@ public class SecurityConfig {
         return http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers( // 아래 경로에 대한 접근 허용
-                                new AntPathRequestMatcher("/login"),
-                                new AntPathRequestMatcher("signup"),
-                                new AntPathRequestMatcher("/user")
+                                "/static/**", "/login", "/signup", "/api/v1/users/**"
                         ).permitAll()
                         .anyRequest().authenticated()) // 그외 모든 요청 인증 필요
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login")
+                        .permitAll()
                         .defaultSuccessUrl("/")
                 )
                 .logout(logout -> logout
