@@ -1,5 +1,7 @@
 package com.project.skin.service;
 
+import com.project.skin.config.error.exception.DuplicateEmailException;
+import com.project.skin.config.error.exception.DuplicateNicknameException;
 import com.project.skin.domain.user.Role;
 import com.project.skin.domain.user.User;
 import com.project.skin.domain.user.UserRole;
@@ -29,7 +31,11 @@ public class UserService {
         String encryptedPassword = bCryptPasswordEncoder.encode(request.getPassword());
 
         if(userProvider.checkEmail(request.getEmail())) {
-            throw new IllegalArgumentException();
+            throw new DuplicateEmailException();
+        }
+
+        if (userProvider.checkNickname(request.getNickname())) {
+            throw new DuplicateNicknameException();
         }
 
         User user = User.createBasicUser(request.getEmail(), encryptedPassword, request.getNickname());
