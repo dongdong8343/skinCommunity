@@ -4,12 +4,14 @@ import com.project.skin.domain.user.User;
 import com.project.skin.service.UserService;
 import com.project.skin.service.dto.AddUser;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Log4j2
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/users")
@@ -18,7 +20,8 @@ public class UserApiController {
 
     @GetMapping("/check-email")
     public ResponseEntity<Map<String, Boolean>> checkEmail(@RequestParam(value = "email") String email) {
-        System.out.println(email);
+       log.info("===========================> email = " + email);
+
         Map<String, Boolean> response = new HashMap<>();
 
         response.put("exists", userService.checkEmail(email));
@@ -28,7 +31,6 @@ public class UserApiController {
 
     @GetMapping("/check-nickname")
     public ResponseEntity<Map<String, Boolean>> checkNickname(@RequestParam(value = "nickname") String nickname) {
-        System.out.println(nickname);
         Map<String, Boolean> response = new HashMap<>();
 
         response.put("exists", userService.checkNickname(nickname));

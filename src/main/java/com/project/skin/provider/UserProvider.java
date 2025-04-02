@@ -1,7 +1,6 @@
 package com.project.skin.provider;
 
 import com.project.skin.config.error.exception.UserNotFoundException;
-import com.project.skin.domain.user.Role;
 import com.project.skin.domain.user.User;
 import com.project.skin.domain.user.UserRole;
 import com.project.skin.repository.UserRepository;

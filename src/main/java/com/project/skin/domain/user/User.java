@@ -34,7 +34,7 @@ public class User extends BaseTimeEntity implements UserDetails { // 인증 객�
     @Column(nullable = false)
     private LoginType type;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<UserRole> userRoles;
 
     public User(LoginType type, String email, String password, String nickname) {
@@ -84,7 +84,7 @@ public class User extends BaseTimeEntity implements UserDetails { // 인증 객�
 
     @Override // 권한 반환
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return userRoles.stream()
+       return userRoles.stream()
                 .map(role -> new SimpleGrantedAuthority(role.getRole().getKey()))
                 .collect(Collectors.toList());
     }
