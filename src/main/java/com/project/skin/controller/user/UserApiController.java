@@ -19,14 +19,9 @@ public class UserApiController {
     private final UserService userService;
 
     @GetMapping("/check-email")
-    public ResponseEntity<Map<String, Boolean>> checkEmail(@RequestParam(value = "email") String email) {
+    public void checkEmail(@RequestParam(value = "email") String email) {
        log.info("===========================> email = " + email);
-
-        Map<String, Boolean> response = new HashMap<>();
-
-        response.put("exists", userService.checkEmail(email));
-
-        return ResponseEntity.ok(response);
+        userService.checkEmail(email);
     }
 
     @GetMapping("/check-nickname")
@@ -38,14 +33,18 @@ public class UserApiController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/new")
+
+    // RestApi 잘 모른다
+
+    //  POST {host}/api/v1/users
+    @PostMapping
     public AddUser.Response signup(@RequestBody AddUser.Request request) {
         User user = userService.createUser(request);
 
         return AddUser.Response.toResponse(user);
     }
 
-    @PostMapping("/grant/{userId}")
+    @PostMapping("/{userId}/roles/{role}")
     public ResponseEntity<String> grantAdmin(@PathVariable Long userId) {
         userService.grantAdminUser(userId);
 

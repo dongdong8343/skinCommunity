@@ -29,7 +29,7 @@ public class SecurityConfig {
                         ).permitAll()
                         .anyRequest().authenticated()) // 그외 모든 요청 인증 필요
                 .formLogin(formLogin -> formLogin
-                        .loginPage("/login")
+                      ran  .loginPage("/login")
                         .permitAll()
                         .defaultSuccessUrl("/")
                 )

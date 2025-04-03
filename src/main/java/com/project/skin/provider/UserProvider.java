@@ -5,6 +5,7 @@ import com.project.skin.domain.user.User;
 import com.project.skin.domain.user.UserRole;
 import com.project.skin.repository.UserRepository;
 import com.project.skin.repository.UserRoleRepository;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -27,18 +28,16 @@ public class UserProvider {
                 .orElseThrow(UserNotFoundException::new);
     }
 
-    public boolean checkEmail(String email) {
-        return userRepository.existsByEmail(email);
+    public Optional<User> checkEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     public boolean checkNickname(String nickname) {
         return userRepository.existsByNickname(nickname);
     }
 
-    public User createUser(User user, UserRole userRole) {
+    public User createUser(User user) {
         userRepository.save(user);
-        userRoleRepository.save(userRole);
-
         return user;
     }
 

@@ -7,10 +7,14 @@ import com.project.skin.domain.user.User;
 import com.project.skin.domain.user.UserRole;
 import com.project.skin.provider.UserProvider;
 import com.project.skin.service.dto.AddUser;
+import com.project.skin.service.validator.CreateUserValidate;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -18,30 +22,29 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private final UserProvider userProvider;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final CreateUserValidate createUserValidate;
 
-    public boolean checkEmail(String email) {
-        return userProvider.checkEmail(email);
+    @Transactional(readOnly = true)
+    public void checkEmail(String email) {
+
+        Optional<User> user = userProvider.checkEmail(email);
+        if(user.isPresent()) {
+            throw new DuplicateEmailException();
+        }
     }
 
+    @Transactional(readOnly = true)
     public boolean checkNickname(String nickname) {
         return userProvider.checkNickname(nickname);
     }
 
     public User createUser(AddUser.Request request) {
-        String encryptedPassword = bCryptPasswordEncoder.encode(request.getPassword());
 
-        if(userProvider.checkEmail(request.getEmail())) {
-            throw new DuplicateEmailException();
-        }
+        createUserValidate.validate(request);
+        User user = User.createBasicUser(request.getEmail(), bCryptPasswordEncoder.encode(request.getPassword()), request.getNickname());
 
-        if (userProvider.checkNickname(request.getNickname())) {
-            throw new DuplicateNicknameException();
-        }
 
-        User user = User.createBasicUser(request.getEmail(), encryptedPassword, request.getNickname());
-        UserRole userRole = UserRole.ofUserRole(user, Role.USER);
-
-        return userProvider.createUser(user, userRole);
+        return userProvider.createUser(user);
     }
 
     public void grantAdminUser(Long userId) {
