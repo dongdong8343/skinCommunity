@@ -1,7 +1,7 @@
 package com.project.skin.controller.user;
 
 import com.project.skin.domain.user.User;
-import com.project.skin.service.UserService;
+import com.project.skin.service.user.UserService;
 import com.project.skin.service.dto.AddUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -38,7 +38,6 @@ public class UserApiController {
         return ResponseEntity.ok(response);
     }
 
-    // 해당 경로 시큐리티 설정에서 모든 권한에서 접근 가능하게 허용 안해서 2일 날림....
     @PostMapping("/new")
     public AddUser.Response signup(@RequestBody AddUser.Request request) {
         User user = userService.createUser(request);

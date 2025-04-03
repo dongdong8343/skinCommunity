@@ -1,4 +1,4 @@
-package com.project.skin.service;
+package com.project.skin.service.user;
 
 import com.project.skin.config.error.exception.DuplicateEmailException;
 import com.project.skin.config.error.exception.DuplicateNicknameException;

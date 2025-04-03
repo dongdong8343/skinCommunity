@@ -1,6 +1,6 @@
 package com.project.skin.config.auth;
 
-import com.project.skin.service.UserDetailService;
+import com.project.skin.service.user.UserDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

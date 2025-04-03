@@ -1,4 +1,4 @@
-package com.project.skin.service;
+package com.project.skin.service.user;
 
 import com.project.skin.provider.UserProvider;
 import lombok.RequiredArgsConstructor;
