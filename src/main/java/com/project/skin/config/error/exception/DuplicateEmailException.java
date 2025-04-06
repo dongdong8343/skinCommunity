@@ -8,6 +8,6 @@ public class DuplicateEmailException extends BusinessBaseException {
     }
 
     public DuplicateEmailException() {
-        super(ErrorCode.DUPLICATE_NICKNAME);
+        super(ErrorCode.DUPLICATE_EMAIL);
     }
 }
