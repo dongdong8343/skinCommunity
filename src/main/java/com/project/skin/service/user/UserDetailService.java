@@ -1,11 +1,13 @@
 package com.project.skin.service.user;
 
+import com.project.skin.domain.user.UserDetailAdapter;
 import com.project.skin.provider.UserProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -14,7 +16,8 @@ public class UserDetailService implements UserDetailsService {
     private final UserProvider userProvider;
 
     @Override // 사용자 이름으로 사용자 정보 가져옴.
+    @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return userProvider.loadUserByEmail(email);
+        return new UserDetailAdapter(userProvider.loadUserByEmailWithUserRoles(email));
     }
 }

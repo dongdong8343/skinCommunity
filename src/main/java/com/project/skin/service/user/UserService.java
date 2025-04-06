@@ -1,16 +1,16 @@
 package com.project.skin.service.user;
 
-import com.project.skin.config.error.exception.DuplicateEmailException;
-import com.project.skin.config.error.exception.DuplicateNicknameException;
 import com.project.skin.domain.user.Role;
 import com.project.skin.domain.user.User;
 import com.project.skin.domain.user.UserRole;
 import com.project.skin.provider.UserProvider;
 import com.project.skin.service.dto.AddUser;
+import com.project.skin.service.validator.CreateUserValidate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -18,37 +18,32 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private final UserProvider userProvider;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final CreateUserValidate createUserValidate;
 
-    public boolean checkEmail(String email) {
-        return userProvider.checkEmail(email);
+    @Transactional(readOnly = true)
+    public void checkEmail(String email) {
+        createUserValidate.checkEmail(email);
     }
 
-    public boolean checkNickname(String nickname) {
-        return userProvider.checkNickname(nickname);
+    @Transactional(readOnly = true)
+    public void checkNickname(String nickname) {
+        createUserValidate.checkNickname(nickname);
     }
 
     public User createUser(AddUser.Request request) {
+        createUserValidate.validate(request);
+
         String encryptedPassword = bCryptPasswordEncoder.encode(request.getPassword());
 
-        if(userProvider.checkEmail(request.getEmail())) {
-            throw new DuplicateEmailException();
-        }
-
-        if (userProvider.checkNickname(request.getNickname())) {
-            throw new DuplicateNicknameException();
-        }
-
         User user = User.createBasicUser(request.getEmail(), encryptedPassword, request.getNickname());
-        UserRole userRole = UserRole.ofUserRole(user, Role.USER);
 
-        return userProvider.createUser(user, userRole);
+        return userProvider.createUser(user);
     }
 
-    public void grantAdminUser(Long userId) {
+    @Transactional
+    public void grantRole(Long userId, String role) {
         User user = userProvider.loadUserById(userId);
-        UserRole userRole = UserRole.ofUserRole(user, Role.ADMIN);
-
-        userProvider.grantAdminUser(userRole);
+        user.grantRole(Role.valueOf("ROLE_" + role));
     }
 }
 
