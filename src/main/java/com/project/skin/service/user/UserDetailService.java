@@ -18,6 +18,6 @@ public class UserDetailService implements UserDetailsService {
     @Override // 사용자 이름으로 사용자 정보 가져옴.
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return new UserDetailAdapter(userProvider.loadUserByEmailWithUserRoles(email));
+        return new UserDetailAdapter(userProvider.loadUserByEmail(email));
     }
 }

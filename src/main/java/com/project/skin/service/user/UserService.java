@@ -2,7 +2,6 @@ package com.project.skin.service.user;
 
 import com.project.skin.domain.user.Role;
 import com.project.skin.domain.user.User;
-import com.project.skin.domain.user.UserRole;
 import com.project.skin.provider.UserProvider;
 import com.project.skin.service.dto.AddUser;
 import com.project.skin.service.validator.CreateUserValidate;

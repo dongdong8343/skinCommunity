@@ -15,8 +15,8 @@ import java.util.Optional;
 public class UserProvider {
     private final UserRepository userRepository;
 
-    public User loadUserByEmailWithUserRoles(String email) {
-        return userRepository.findByEmailWithUserRoles(email)
+    public User loadUserByEmail(String email) {
+        return userRepository.findByEmail(email)
                 .orElseThrow(UserNotFoundException::new);
     }
 
