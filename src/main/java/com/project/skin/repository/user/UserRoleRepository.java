@@ -1,4 +1,4 @@
-package com.project.skin.repository;
+package com.project.skin.repository.user;
 
 import com.project.skin.domain.user.UserRole;
 import org.springframework.data.jpa.repository.JpaRepository;

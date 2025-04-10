@@ -14,8 +14,11 @@ public enum ErrorCode {
 
     // Global 에러 (G_)
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "G_001", "잘못된 HTTP 메서드를 호출했습니다."),
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "G_002", "서버 에러가 발생했습니다.");
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "G_002", "서버 에러가 발생했습니다."),
+
+    // Token 관련 에러 (T_)
+    UNAUTHORIZED_REFRESH_TOKEN_MISSING(HttpStatus.UNAUTHORIZED, "T_001", "리프레시 토큰이 존재하지 않습니다."),
+
     // Mail 전송 관련 에러 (M_)
     EMAIL_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "M_001", "메일 전송에 실패했습니다.");
 

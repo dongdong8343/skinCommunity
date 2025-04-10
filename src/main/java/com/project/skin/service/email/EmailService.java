@@ -2,7 +2,6 @@ package com.project.skin.service.email;
 
 import com.project.skin.config.error.exception.EmailSendFailedException;
 import com.project.skin.service.dto.EmailMessage;
-import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

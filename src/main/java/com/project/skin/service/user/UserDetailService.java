@@ -1,7 +1,7 @@
 package com.project.skin.service.user;
 
 import com.project.skin.domain.user.UserDetailAdapter;
-import com.project.skin.provider.UserProvider;
+import com.project.skin.provider.user.UserProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

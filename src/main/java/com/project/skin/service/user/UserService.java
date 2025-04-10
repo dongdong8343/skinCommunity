@@ -45,7 +45,7 @@ public class UserService {
         emailService.sendSignupSuccessMail(
                 EmailMessage.createEmailMessage(
                         savedUser.getEmail(),
-                        "피부로그 회원가입을 축하드립니다!",
+                        "스킨로그 회원가입을 축하드립니다!",
                         savedUser.getNickname() + "님 회원가입을 축하드립니다."),
                 user.getNickname());
 

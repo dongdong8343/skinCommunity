@@ -1,8 +1,8 @@
-package com.project.skin.provider;
+package com.project.skin.provider.user;
 
 import com.project.skin.config.error.exception.UserNotFoundException;
 import com.project.skin.domain.user.User;
-import com.project.skin.repository.UserRepository;
+import com.project.skin.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,9 +34,7 @@ public class UserProvider {
     }
 
     public User createUser(User user) {
-        userRepository.save(user);
-
-        return user;
+        return userRepository.save(user);
     }
 }
 
