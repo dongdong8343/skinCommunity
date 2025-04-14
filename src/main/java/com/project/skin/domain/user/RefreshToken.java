@@ -16,7 +16,7 @@ public class RefreshToken {
     @Column(nullable = false, unique = true)
     private Long userId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 1000)
     private String refreshToken;
 
     private RefreshToken(Long userId, String refreshToken) {
@@ -24,13 +24,12 @@ public class RefreshToken {
         this.refreshToken = refreshToken;
     }
 
-    public RefreshToken makeRefreshToken(Long userId, String refreshToken) {
+    public static RefreshToken makeRefreshToken(Long userId, String refreshToken) {
         return new RefreshToken(userId, refreshToken);
     }
 
-    public RefreshToken update(String newRefreshToken) {
+    public void update(String newRefreshToken) {
         this.refreshToken = newRefreshToken;
-        return this;
     }
 
 

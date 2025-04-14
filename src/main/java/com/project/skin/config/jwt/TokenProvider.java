@@ -1,11 +1,13 @@
 package com.project.skin.config.jwt;
 
-import com.project.skin.domain.user.User;
+import com.project.skin.service.dto.CreateAccessToken;
+import com.project.skin.service.dto.Login;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -17,31 +19,51 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class TokenProvider {
     private final JwtProperties jwtProperties;
 
-    public String generateToken(User user, Duration expiredAt) {
-        Date now = new Date();
-        return makeToken(new Date(now.getTime() + expiredAt.toMillis()), user);
+    private static final Duration ACCESS_TOKEN_EXPIRY = Duration.ofMinutes(15);
+    private static final Duration REFRESH_TOKEN_EXPIRY = Duration.ofDays(7);
+
+    public CreateAccessToken.Response generateAccessToken(String email, List<String> roles) {
+        return CreateAccessToken.Response.create(makeAccessToken(email, roles), (int)ACCESS_TOKEN_EXPIRY.getSeconds());
     }
 
-    // 토큰 생성
-    private String makeToken(Date expiry, User user) {
-        Date now = new Date();
+    public Login.Response generateTokens(Long userId, String email, List<String> roles){
+        String accessToken = makeAccessToken(email, roles);
+        String refreshToken = makeRefreshToken(userId);
 
-        List<String> roles = user.getUserRoles().stream().map(role -> role.getRole().getKey()).toList();
+        return Login.Response.create(accessToken, refreshToken, (int)ACCESS_TOKEN_EXPIRY.getSeconds(), (int)REFRESH_TOKEN_EXPIRY.getSeconds());
+    }
+
+    private String makeAccessToken(String email, List<String> roles) {
+        Date now = new Date();
 
         return Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE) // 헤더 타입 - JWT
                 .setIssuer(jwtProperties.getIssuer()) // 내용 iss(발급자) : properties 파일에서 설정한 값
                 .setIssuedAt(now) // 내용 iat(발급일시) : 현재 시간
-                .setExpiration(expiry) // 내용 exp(만료일시) : expiry 멤버 변숫값
-                .setSubject(user.getEmail()) // 내용 sub(토큰 제목) : 유저의 이메일
-                .claim("email", user.getEmail()) // 클레임 email : 유저 email
+                .setExpiration(new Date(now.getTime() + ACCESS_TOKEN_EXPIRY.toMillis())) // 내용 exp(만료일시)
+                .setSubject(email) // 내용 sub(토큰 제목) : 유저의 이메일
+                .claim("email", email) // 클레임 email : 유저 email
                 .claim("roles", roles) // 클레임 roles : 유저 권한들
                 .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecretKey()) // 서명 - 비밀 값과 함께 암호화
+                .compact();
+    }
+
+    private String makeRefreshToken(Long userId) {
+        Date now = new Date();
+
+        return Jwts.builder()
+                .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
+                .setIssuer(jwtProperties.getIssuer())
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + REFRESH_TOKEN_EXPIRY.toMillis()))
+                .setSubject(String.valueOf(userId))
+                .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecretKey())
                 .compact();
     }
 
@@ -69,12 +91,6 @@ public class TokenProvider {
 
         return new UsernamePasswordAuthenticationToken(new org.springframework.security.core.userdetails.User
                 (claims.getSubject(), "", authorities), token, authorities);
-    }
-
-    // 토큰 기반으로 유저 email 가져오는 메서드
-    public String getUserEmail(String token) {
-        Claims claims = getClaims(token);
-        return claims.get("email", String.class);
     }
 
     private Claims getClaims(String token) {

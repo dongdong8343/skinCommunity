@@ -23,6 +23,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<ErrorResponse> handle(Exception e) {
+        log.info("exception");
         return createErrorResponseEntity(ErrorCode.INTERNAL_SERVER_ERROR);
     }
 

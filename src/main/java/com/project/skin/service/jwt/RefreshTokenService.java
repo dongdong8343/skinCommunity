@@ -1,30 +1,26 @@
-package com.project.skin.service.token;
+package com.project.skin.service.jwt;
 
-import com.project.skin.config.error.exception.UnauthorizedRefreshTokenMissing;
 import com.project.skin.config.jwt.TokenProvider;
 import com.project.skin.domain.user.User;
-import com.project.skin.provider.token.RefreshTokenProvider;
+import com.project.skin.provider.jwt.RefreshTokenProvider;
 import com.project.skin.provider.user.UserProvider;
+import com.project.skin.service.dto.CreateAccessToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.time.Duration;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
-public class TokenService {
+public class RefreshTokenService {
     private final TokenProvider tokenProvider;
     private final RefreshTokenProvider refreshTokenProvider;
     private final UserProvider userProvider;
 
-    public String createNewAccessToken(String refreshToken) {
-        if (!tokenProvider.validToken(refreshToken)) {
-            throw new UnauthorizedRefreshTokenMissing();
-        }
-
+    @Transactional(readOnly = true)
+    public CreateAccessToken.Response createNewAccessToken(String refreshToken) {
         Long userId = refreshTokenProvider.findByRefreshToken(refreshToken).getUserId();
         User user = userProvider.loadUserById(userId);
 
-        return tokenProvider.generateToken(user, Duration.ofHours(2));
+        return tokenProvider.generateAccessToken(user.getEmail(), user.getUserRoles().stream().map(userRole -> userRole.getRole().getKey()).toList());
     }
 }

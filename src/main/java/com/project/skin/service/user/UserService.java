@@ -1,11 +1,17 @@
 package com.project.skin.service.user;
 
+import com.project.skin.config.error.exception.InvalidPassword;
+import com.project.skin.config.jwt.TokenProvider;
+import com.project.skin.domain.user.RefreshToken;
 import com.project.skin.domain.user.Role;
 import com.project.skin.domain.user.User;
+import com.project.skin.provider.jwt.RefreshTokenProvider;
 import com.project.skin.provider.user.UserProvider;
 import com.project.skin.service.dto.AddUser;
 import com.project.skin.service.dto.EmailMessage;
+import com.project.skin.service.dto.Login;
 import com.project.skin.service.email.EmailService;
+import com.project.skin.service.jwt.RefreshTokenService;
 import com.project.skin.service.validator.CreateUserValidate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -22,6 +28,8 @@ public class UserService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final CreateUserValidate createUserValidate;
     private final EmailService emailService;
+    private final TokenProvider tokenProvider;
+    private final RefreshTokenProvider refreshTokenProvider;
 
     @Transactional(readOnly = true)
     public void checkEmail(String email) {
@@ -31,6 +39,32 @@ public class UserService {
     @Transactional(readOnly = true)
     public void checkNickname(String nickname) {
         createUserValidate.checkNickname(nickname);
+    }
+
+    @Transactional
+    public Login.Response login(Login.Request request) {
+        User user = userProvider.loadUserByEmail(request.getEmail());
+
+        if (!bCryptPasswordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new InvalidPassword();
+        }
+
+        Login.Response response = tokenProvider.generateTokens(
+                user.getId(),
+                user.getEmail(),
+                user.getUserRoles().stream().map(role -> role.getRole().getKey()).toList()
+        );
+
+        RefreshToken refreshToken = refreshTokenProvider.findByUserId(user.getId());
+
+        if (refreshToken != null) {
+            refreshToken.update(response.getRefreshToken());
+        } else {
+            refreshToken = RefreshToken.makeRefreshToken(user.getId(), response.getRefreshToken());
+            refreshTokenProvider.saveRefreshToken(refreshToken);
+        }
+
+        return response;
     }
 
     public User createUser(AddUser.Request request) {

@@ -2,7 +2,9 @@ package com.project.skin.config.auth;
 
 import com.project.skin.config.TokenAuthenticationFilter;
 import com.project.skin.config.jwt.TokenProvider;
+import com.project.skin.service.jwt.RefreshTokenService;
 import com.project.skin.service.user.UserDetailService;
+import com.project.skin.util.CookieUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,7 +14,6 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -22,7 +23,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final TokenProvider tokenProvider;
+    private final RefreshTokenService refreshTokenService;
     private final UserDetailService userService;
+    private final CookieUtil cookieUtil;
 
     // 특정 http 요청에 대해 웹 기반 보안 구성
     @Bean
@@ -33,16 +36,13 @@ public class SecurityConfig {
                                 "/static/**", "/login", "/signup", "/api/v1/users/**"
                         ).permitAll()
                         .anyRequest().authenticated()) // 그외 모든 요청 인증 필요
-                .formLogin(formLogin -> formLogin
-                        .loginPage("/login")
-                        .permitAll()
-                        .defaultSuccessUrl("/")
-                )
-                .logout(logout -> logout
-                        .logoutSuccessUrl("/login")
-                        .invalidateHttpSession(true)
-                )
                 .csrf(AbstractHttpConfigurer::disable)
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.sendRedirect("/login");
+                        })
+                )
+                .addFilterBefore(new TokenAuthenticationFilter(tokenProvider, refreshTokenService, cookieUtil), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
