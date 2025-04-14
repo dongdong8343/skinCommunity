@@ -11,7 +11,6 @@ import com.project.skin.service.dto.AddUser;
 import com.project.skin.service.dto.EmailMessage;
 import com.project.skin.service.dto.Login;
 import com.project.skin.service.email.EmailService;
-import com.project.skin.service.jwt.RefreshTokenService;
 import com.project.skin.service.validator.CreateUserValidate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
