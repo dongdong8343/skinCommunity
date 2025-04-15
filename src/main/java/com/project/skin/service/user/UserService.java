@@ -5,15 +5,15 @@ import com.project.skin.config.jwt.TokenProvider;
 import com.project.skin.domain.user.RefreshToken;
 import com.project.skin.domain.user.Role;
 import com.project.skin.domain.user.User;
+import com.project.skin.event.EmailSendEvent;
 import com.project.skin.provider.jwt.RefreshTokenProvider;
 import com.project.skin.provider.user.UserProvider;
 import com.project.skin.service.dto.AddUser;
-import com.project.skin.service.dto.EmailMessage;
 import com.project.skin.service.dto.Login;
-import com.project.skin.service.email.EmailService;
 import com.project.skin.service.validator.CreateUserValidate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,11 +24,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class UserService {
     private final UserProvider userProvider;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final CreateUserValidate createUserValidate;
-    private final EmailService emailService;
     private final TokenProvider tokenProvider;
     private final RefreshTokenProvider refreshTokenProvider;
+    private final CreateUserValidate createUserValidate;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Transactional(readOnly = true)
     public void checkEmail(String email) {
@@ -66,6 +66,7 @@ public class UserService {
         return response;
     }
 
+    @Transactional
     public User createUser(AddUser.Request request) {
         createUserValidate.validate(request);
 
@@ -75,12 +76,13 @@ public class UserService {
 
         User savedUser = userProvider.createUser(user);
 
-        emailService.sendSignupSuccessMail(
-                EmailMessage.createEmailMessage(
-                        savedUser.getEmail(),
-                        "스킨로그 회원가입을 축하드립니다!",
-                        savedUser.getNickname() + "님 회원가입을 축하드립니다."),
-                user.getNickname());
+        applicationEventPublisher.publishEvent(new EmailSendEvent(
+                savedUser.getNickname(),
+                savedUser.getEmail(),
+                "스킨로그 회원가입을 축하드립니다!",
+                savedUser.getNickname() + "님 회원가입을 축하드립니다.",
+                this
+        ));
 
         return savedUser;
     }
