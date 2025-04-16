@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>회원가입을 축하합니다!</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f4f6f8; margin: 0; padding: 0;">
+<div style="background-color: #ffffff; max-width: 600px; margin: 40px auto; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+
+  <!-- Header -->
+  <div style="text-align: center; color: #2e7d32;">
+    <h1 style="font-size: 26px; margin-bottom: 10px;">🎉 [[${username}]]님, 환영합니다!</h1>
+    <p style="margin: 0;">회원가입이 성공적으로 완료되었습니다.</p>
+  </div>
+
+  <!-- Message -->
+  <div style="margin-top: 30px; font-size: 16px; color: #333333; line-height: 1.6;">
+    <p>이제부터 [[${username}]]님은 저희 서비스를 자유롭게 이용하실 수 있습니다.</p>
+    <p>궁금한 점이 있거나 도움이 필요하시면 언제든지 문의해 주세요.</p>
+  </div>
+
+  <!-- Button -->
+  <div style="text-align: center; margin-top: 40px;">
+    <a th:href="@{http://localhost:8080/login}"
+       style="background-color: #4CAF50; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
+      로그인 하러 가기
+    </a>
+  </div>
+
+  <!-- Footer -->
+  <div style="text-align: center; margin-top: 50px; font-size: 13px; color: #888888;">
+    본 메일은 발신전용입니다. 문의는 홈페이지를 통해 주세요.<br>
+    ⓒ 2025 YourBrand Inc.
+  </div>
+
+</div>
+</body>
+</html>
