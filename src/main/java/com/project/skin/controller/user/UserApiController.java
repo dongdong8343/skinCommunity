@@ -40,7 +40,7 @@ public class UserApiController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Login.Request request, HttpServletResponse response) {
+    public ResponseEntity<String> login(@RequestBody Login.Request request, HttpServletResponse response) {
         Login.Response loginResponse = userService.login(request);
 
         response.addCookie(
