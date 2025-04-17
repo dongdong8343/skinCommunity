@@ -21,7 +21,7 @@ public class Category extends BaseTimeEntity {
     @JoinColumn(name = "category_id")
     private Category parent;
 
-    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Category> children = new ArrayList<>();
 
     @Column(length = 20, nullable = false)
@@ -41,12 +41,19 @@ public class Category extends BaseTimeEntity {
     }
 
     // 카테고리 생성
-    public Category createCategory(String code, String name) {
+    public static Category createCategory(String code, String name) {
         return new Category(code, name);
     }
 
     // 서브 카테고리 생성
-    public Category createSubCategory(Category parent, String code, String name) {
-        return new Category(parent, code, name);
+    public static Category createSubCategory(Category parent, String code, String name) {
+        Category subCategory = new Category(parent, code, name);
+        parent.getChildren().add(subCategory);
+
+        return subCategory;
+    }
+
+    public void addChildrenCategory(Category subCategory) {
+        this.getChildren().add(subCategory);
     }
 }
