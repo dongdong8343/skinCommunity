@@ -11,6 +11,7 @@
         body {
             background-color: #f8f9fa;
         }
+
         .login-container {
             max-width: 400px;
             margin: 100px auto;
@@ -61,17 +62,34 @@
             password: document.querySelector('#password').value
         }
 
+        const accessToken = getCookie("accessToken")
+
         axios.post('api/v1/users/login', data, {
-            headers: {'Content-Type': 'application/json'}
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            }
         })
             .then(res => {
-                console.log(res)
                 window.location.href = "/";
             })
             .catch(error => {
                 console.log('로그인 실패', error)
             })
     })
+
+    function getCookie(cookieName) {
+        const cookies = document.cookie.split(';');
+
+        for (let i = 0; i < cookies.length; i++) {
+            let cookie = cookies[i].trim();
+            if (cookie.startsWith(cookieName + '=')) {
+                return cookie.substring(cookieName.length + 1);
+            }
+        }
+
+        return null;
+    }
 </script>
 </body>
 </html>

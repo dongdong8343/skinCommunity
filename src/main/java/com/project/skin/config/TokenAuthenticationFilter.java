@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -25,25 +26,18 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     private final RefreshTokenService refreshTokenService;
     private final CookieUtil cookieUtil;
 
-//    private final static String HEADER_AUTHORIZATION = "Authorization";
-//    private final static String TOKEN_PREFIX = "Bearer ";
+    private final static String TOKEN_PREFIX = "Bearer ";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-
-//        String accessToken = getToken(request.getHeader(HEADER_AUTHORIZATION));
-//
-//        if (accessToken == null) {
-//            accessToken = getToken(request.getCookies(), "accessToken");
-//        }
-
-        String accessToken = getToken(request.getCookies(), TokenType.ACCESS_TOKEN.getTokenType());
+        log.info("------------------------------------필터 동작합니다.");
+        String accessToken = getToken(request, TokenType.ACCESS_TOKEN.getTokenType());
 
         if (tokenProvider.validToken(accessToken)) {
             Authentication authentication = tokenProvider.getAuthentication(accessToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } else {
-            String refreshToken = getToken(request.getCookies(), TokenType.REFRESH_TOKEN.getTokenType());
+            String refreshToken = getToken(request, TokenType.REFRESH_TOKEN.getTokenType());
             if (tokenProvider.validToken(refreshToken)) {
                 CreateAccessToken.Response createAccessToken = refreshTokenService.createNewAccessToken(refreshToken);
                 accessToken = createAccessToken.getAccessToken();
@@ -58,23 +52,26 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private String getToken(Cookie[] cookies, String tokenType) {
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals(tokenType)) {
-                    return cookie.getValue();
+    private String getToken(HttpServletRequest request, String tokenType) {
+        String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        String accessToken = null;
+
+        if (authorizationHeader != null && authorizationHeader.startsWith(TOKEN_PREFIX)) {
+            accessToken = authorizationHeader.substring(TOKEN_PREFIX.length());
+        } else {
+            Cookie[] cookies = request.getCookies();
+
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if (cookie.getName().equals(tokenType)) {
+                        accessToken = cookie.getValue();
+                        break;
+                    }
                 }
             }
+
         }
 
-        return null;
+        return accessToken;
     }
-
-//    private String getToken(String authorizationHeader) {
-//        if (authorizationHeader != null && authorizationHeader.startsWith(TOKEN_PREFIX)) {
-//            return authorizationHeader.substring(TOKEN_PREFIX.length());
-//        }
-//        return null;
-//    }
-
 }
