@@ -76,13 +76,7 @@ public class UserService {
 
         User savedUser = userProvider.createUser(user);
 
-        applicationEventPublisher.publishEvent(new EmailSendEvent(
-                savedUser.getNickname(),
-                savedUser.getEmail(),
-                "스킨로그 회원가입을 축하드립니다!",
-                savedUser.getNickname() + "님 회원가입을 축하드립니다.",
-                this
-        ));
+        applicationEventPublisher.publishEvent(EmailSendEvent.singUp(savedUser));
 
         return savedUser;
     }
