@@ -13,10 +13,10 @@ public enum ErrorCode {
     DUPLICATE_NICKNAME(HttpStatus.CONFLICT, "U_003", "이미 사용 중인 닉네임입니다."),
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "U_004", "비밀번호가 일치하지 않습니다."),
 
-
     // Global 에러 (G_)
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "G_001", "잘못된 HTTP 메서드를 호출했습니다."),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "G_002", "서버 에러가 발생했습니다."),
+    INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "G_003", "입력값이 유효하지 않습니다."),
 
     // Token 관련 에러 (T_)
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "T_001", "리프레시 토큰이 유효하지 않습니다."),

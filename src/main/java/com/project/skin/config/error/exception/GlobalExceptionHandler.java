@@ -5,25 +5,35 @@ import com.project.skin.config.error.ErrorResponse;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
 
 @RestControllerAdvice
 @Log4j2
 public class GlobalExceptionHandler {
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    protected ResponseEntity<ErrorResponse> handle(MethodArgumentNotValidException e) {
+        e.printStackTrace();
+        return createErrorResponseEntity(ErrorCode.INVALID_INPUT_VALUE);
+    }
+
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     protected ResponseEntity<ErrorResponse> handle(HttpRequestMethodNotSupportedException e) {
+        e.printStackTrace();
         return createErrorResponseEntity(ErrorCode.METHOD_NOT_ALLOWED);
     }
 
     @ExceptionHandler(BusinessBaseException.class)
     protected ResponseEntity<ErrorResponse> handle(BusinessBaseException e) {
+        e.printStackTrace();
         return createErrorResponseEntity(e.getErrorCode());
     }
 
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<ErrorResponse> handle(Exception e) {
-        log.info("exception");
+        e.printStackTrace();
         return createErrorResponseEntity(ErrorCode.INTERNAL_SERVER_ERROR);
     }
 

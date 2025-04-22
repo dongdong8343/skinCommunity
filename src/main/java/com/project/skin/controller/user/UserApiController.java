@@ -1,17 +1,17 @@
 package com.project.skin.controller.user;
 
 import com.project.skin.config.jwt.TokenType;
-import com.project.skin.domain.user.User;
 import com.project.skin.service.dto.Login;
 import com.project.skin.service.user.UserService;
 import com.project.skin.service.dto.AddUser;
 import com.project.skin.util.CookieUtil;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 
 @Log4j2
 @RequiredArgsConstructor
@@ -32,10 +32,8 @@ public class UserApiController {
     }
 
     @PostMapping
-    public AddUser.Response signup(@RequestBody AddUser.Request request) {
-        User user = userService.createUser(request);
-
-        return AddUser.Response.toResponse(user);
+    public AddUser.Response signup(@RequestBody @Valid AddUser.Request request) {
+        return userService.createUser(request);
     }
 
 
