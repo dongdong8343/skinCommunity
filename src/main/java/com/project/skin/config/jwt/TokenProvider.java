@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Slf4j
 @RequiredArgsConstructor
 @Service
 public class TokenProvider {
@@ -32,11 +31,11 @@ public class TokenProvider {
         return CreateAccessToken.Response.create(makeAccessToken(email, roles), (int)ACCESS_TOKEN_EXPIRY.getSeconds());
     }
 
-    public Login.Response generateTokens(Long userId, String email, List<String> roles){
+    public Token generateTokens(Long userId, String email, List<String> roles){
         String accessToken = makeAccessToken(email, roles);
         String refreshToken = makeRefreshToken(userId);
 
-        return Login.Response.create(accessToken, refreshToken, (int)ACCESS_TOKEN_EXPIRY.getSeconds(), (int)REFRESH_TOKEN_EXPIRY.getSeconds());
+        return Token.create(accessToken, refreshToken, (int)ACCESS_TOKEN_EXPIRY.getSeconds(), (int)REFRESH_TOKEN_EXPIRY.getSeconds());
     }
 
     private String makeAccessToken(String email, List<String> roles) {

@@ -48,7 +48,7 @@ public class UserService {
             throw new InvalidPassword();
         }
 
-        Login.Response response = tokenProvider.generateTokens(
+        Token tokens = tokenProvider.generateTokens(
                 user.getId(),
                 user.getEmail(),
                 user.getUserRoles().stream().map(role -> role.getRole().getKey()).toList()
@@ -57,13 +57,13 @@ public class UserService {
         RefreshToken refreshToken = refreshTokenProvider.findByUserId(user.getId());
 
         if (refreshToken != null) {
-            refreshToken.update(response.getRefreshToken());
+            refreshToken.update(tokens.getRefreshToken());
         } else {
-            refreshToken = RefreshToken.makeRefreshToken(user.getId(), response.getRefreshToken());
+            refreshToken = RefreshToken.createRefreshToken(user.getId(), tokens.getRefreshToken());
             refreshTokenProvider.saveRefreshToken(refreshToken);
         }
 
-        return response;
+        return Login.Response.create(tokens.getAccessToken(), tokens.getRefreshToken(), tokens.getAccessTokenCookieMaxAge(), tokens.getRefreshTokenCookieMaxAge());
     }
 
     @Transactional
