@@ -30,9 +30,9 @@ public class AddUser {
             this.email = email;
             this.nickname = nickname;
         }
+    }
 
-        public static Response toResponse(User user) {
-            return new Response(user.getId(), user.getEmail(), user.getNickname());
-        }
+    public static Response toResponse(User user) {
+        return new Response(user.getId(), user.getEmail(), user.getNickname());
     }
 }
