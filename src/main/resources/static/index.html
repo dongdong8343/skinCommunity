@@ -1,10 +1,70 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta charset="UTF-8"/>
+    <title>관리자 메인</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <h1>메인페이지</h1>
+<body class="bg-gray-100 font-sans min-h-screen">
+<header class="flex justify-between items-center p-4 border-b bg-white">
+    <!-- 가운데 로고 -->
+    <div class="mx-auto text-xl font-bold">
+        피부일지 (logo)
+    </div>
+
+    <!-- 오른쪽 아이콘 -->
+    <div class="absolute right-6">
+        <a href="/mypage">
+            <img src="/images/user-icon.svg" alt="사용자 아이콘" width="24" height="24">
+        </a>
+    </div>
+</header>
+
+<div class="flex">
+    <!-- 사이드바 -->
+    <aside class="w-64 bg-gray-100 p-4 border-r h-screen">
+        <nav class="space-y-4 mt-6">
+            <a href="/admin/categories" class="block px-4 py-2 rounded hover:bg-gray-200">카테고리 관리</a>
+            <a href="/admin/users" class="block px-4 py-2 rounded hover:bg-gray-200">사용자 권한 부여 및 관리</a>
+            <a href="/admin/posts" class="block px-4 py-2 rounded hover:bg-gray-200">게시글 관리</a>
+            <a href="/admin/comments" class="block px-4 py-2 rounded hover:bg-gray-200">댓글 관리</a>
+        </nav>
+    </aside>
+
+    <!-- 메인 콘텐츠 -->
+    <main class="flex-1 p-8">
+        <h2 class="text-2xl font-bold mb-6">관리자 대시보드</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- 요약 카드 1 -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold">총 카테고리 수</h3>
+                <p class="text-2xl mt-2 text-blue-600 font-bold">8</p>
+                <a href="/admin/categories" class="text-sm text-blue-500 mt-4 inline-block">관리하기 →</a>
+            </div>
+
+            <!-- 요약 카드 2 -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold">등록된 사용자 수</h3>
+                <p class="text-2xl mt-2 text-green-600 font-bold">152</p>
+                <a href="/admin/users" class="text-sm text-green-500 mt-4 inline-block">관리하기 →</a>
+            </div>
+
+            <!-- 요약 카드 3 -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold">전체 게시글 수</h3>
+                <p class="text-2xl mt-2 text-purple-600 font-bold">345</p>
+                <a href="/admin/posts" class="text-sm text-purple-500 mt-4 inline-block">관리하기 →</a>
+            </div>
+
+            <!-- 요약 카드 4 -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold">최근 댓글 수</h3>
+                <p class="text-2xl mt-2 text-red-600 font-bold">58</p>
+                <a href="/admin/comments" class="text-sm text-red-500 mt-4 inline-block">관리하기 →</a>
+            </div>
+        </div>
+    </main>
+</div>
 </body>
 </html>
