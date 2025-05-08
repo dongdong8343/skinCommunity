@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>카테고리 관리</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+<header class="bg-white border-b shadow-sm py-4 px-6 flex justify-between items-center">
+    <div class="text-2xl font-bold text-gray-800">피부일지</div>
+    <a href="/mypage" class="text-sm font-medium text-blue-600 hover:underline">마이페이지</a>
+</header>
+
+<div class="flex flex-1">
+    <!-- 사이드바 -->
+    <aside class="w-64 bg-white border-r p-6 space-y-3">
+        <nav class="flex flex-col space-y-2 text-gray-700 font-medium">
+            <a href="/admin" class="hover:bg-blue-50 rounded px-3 py-2">관리자 페이지</a>
+            <a href="/admin/categories" class="bg-blue-100 text-blue-700 rounded px-3 py-2">카테고리 관리</a>
+            <a href="/admin/users" class="hover:bg-blue-50 rounded px-3 py-2">사용자 권한 부여 및 관리</a>
+            <a href="/admin/posts" class="hover:bg-blue-50 rounded px-3 py-2">게시글 관리</a>
+            <a href="/admin/comments" class="hover:bg-blue-50 rounded px-3 py-2">댓글 관리</a>
+        </nav>
+    </aside>
+
+    <!-- 본문 -->
+    <main class="flex-1 p-10 bg-gray-50 overflow-y-auto">
+        <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-6">카테고리 관리</h1>
+
+            <div class="space-y-4" id="category-list">
+                <div class="flex justify-between items-center mb-2">
+                    <h2 class="text-lg font-semibold text-gray-700">카테고리 목록</h2>
+                    <button class="text-sm text-green-600 hover:underline" onclick="addCategory()">+ 상위 카테고리 추가</button>
+                </div>
+                <ul id="category-list-ul" class="space-y-3 ml-4"></ul>
+            </div>
+
+            <div class="flex justify-end mt-8">
+                <button onclick="sendCategories()"
+                        class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-6 rounded shadow transition">
+                    저장
+                </button>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- 저장 완료 모달 -->
+<div id="successModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50 hidden">
+    <div class="bg-white rounded-lg shadow-xl px-8 py-6 text-center">
+        <p class="text-lg font-semibold mb-4">저장이 완료되었습니다</p>
+        <button class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700" onclick="closeModal()">확인</button>
+    </div>
+</div>
+
+<script>
+
+    function showModal() {
+        document.getElementById('successModal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+        document.getElementById('successModal').classList.add('hidden');
+    }
+
+    function addCategory() {
+        const newCategoryInput = `
+        <div class="new-category mb-6 border-b pb-4">
+            <input type="text" class="border p-2 mb-2 w-full" placeholder="카테고리 이름">
+            <input type="text" class="border p-2 mb-2 w-full" placeholder="카테고리 코드">
+            <div class="flex justify-end">
+                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onclick="saveCategory(this)">저장</button>
+                <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded ml-2" onclick="cancelCategory(this)">취소</button>
+            </div>
+        </div>
+        `;
+        document.getElementById("category-list").insertAdjacentHTML('beforeend', newCategoryInput);
+    }
+
+    function saveCategory(button) {
+        const inputs = button.closest('.new-category').querySelectorAll('input');
+        const categoryName = inputs[0].value.trim();
+        const categoryCode = inputs[1].value.trim();
+
+        if (categoryName && categoryCode) {
+            const categoryList = document.getElementById('category-list-ul');
+            const newCategoryItem = document.createElement('li');
+            newCategoryItem.classList.add('category-item', 'ml-2');
+
+            newCategoryItem.innerHTML = `
+                <div class="flex items-center justify-between bg-white border p-2 rounded shadow-sm">
+                    <div class="flex flex-col flex-grow">
+                        <span class="category-name-display">${categoryName}</span>
+                        <span class="text-xs text-gray-500 category-code-display">${categoryCode}</span>
+                        <label class="text-sm text-gray-700 mt-1">
+                          <input type="checkbox" class="skin-type-filter-checkbox mr-1">
+                          피부 타입 필터 사용
+                        </label>
+                    </div>
+                    <div class="flex space-x-2 ml-2">
+                        <button class="text-green-500 hover:underline" onclick="addSubCategory(this)">하위 추가</button>
+                        <button class="text-blue-500 hover:underline" onclick="editCategory(this)">수정</button>
+                        <button class="text-red-500 hover:underline" onclick="deleteCategory(this)">삭제</button>
+                    </div>
+                </div>
+                <ul class="ml-6 space-y-2"></ul>
+            `;
+
+            categoryList.appendChild(newCategoryItem);
+            button.closest('.new-category').remove();
+            initSortable();
+        }
+    }
+
+    function cancelCategory(button) {
+        button.closest('.new-category').remove();
+    }
+
+    function addSubCategory(button) {
+        const parent = button.closest('li');
+        const subUl = parent.querySelector('ul');
+        const inputDiv = document.createElement('div');
+        inputDiv.className = 'sub-category-input mt-2';
+
+        inputDiv.innerHTML = `
+            <input type="text" class="border p-2 w-full mb-2 sub-category-name" placeholder="하위 카테고리 이름">
+            <input type="text" class="border p-2 w-full mb-2 sub-category-code" placeholder="카테고리 코드">
+            <div class="flex justify-end">
+                <button class="bg-blue-500 text-white px-4 py-2 rounded" onclick="saveSubCategory(this)">저장</button>
+                <button class="bg-gray-300 text-gray-800 px-4 py-2 rounded ml-2" onclick="cancelSubCategory(this)">취소</button>
+            </div>
+        `;
+        subUl.appendChild(inputDiv);
+    }
+
+    function saveSubCategory(button) {
+        const wrapper = button.closest('.sub-category-input');
+        const name = wrapper.querySelector('.sub-category-name').value.trim();
+        const code = wrapper.querySelector('.sub-category-code').value.trim();
+        if (name && code) {
+            const li = document.createElement('li');
+            li.classList.add('category-item');
+            li.innerHTML = `
+                <div class="flex items-center justify-between bg-white border p-2 rounded shadow-sm">
+                    <div class="flex flex-col flex-grow">
+                        <span class="category-name-display">${name}</span>
+                        <span class="text-xs text-gray-500 category-code-display">${code}</span>
+                        <label class="text-sm text-gray-700 mt-1">
+                          <input type="checkbox" class="skin-type-filter-checkbox mr-1">
+                          피부 타입 필터 사용
+                        </label>
+                    </div>
+                    <div class="flex space-x-2 ml-2">
+                        <button class="text-green-500 hover:underline" onclick="addSubCategory(this)">하위 추가</button>
+                        <button class="text-blue-500 hover:underline" onclick="editCategory(this)">수정</button>
+                        <button class="text-red-500 hover:underline" onclick="deleteCategory(this)">삭제</button>
+                    </div>
+                </div>
+                <ul class="ml-6 space-y-2"></ul>
+            `;
+            button.closest('ul').appendChild(li);
+            wrapper.remove();
+            initSortable();
+        }
+    }
+
+    function cancelSubCategory(button) {
+        button.closest('.sub-category-input').remove();
+    }
+
+    function editCategory(button) {
+        const container = button.closest('.flex.items-center');
+        const nameSpan = container.querySelector('.category-name-display');
+        const codeSpan = container.querySelector('.category-code-display');
+
+        const newName = prompt("카테고리 이름 수정:", nameSpan.innerText);
+        const newCode = prompt("카테고리 코드 수정:", codeSpan.innerText);
+
+        if (newName && newCode) {
+            nameSpan.innerText = newName.trim();
+            codeSpan.innerText = newCode.trim();
+        }
+    }
+
+    function deleteCategory(button) {
+        if (confirm('이 카테고리를 삭제하시겠습니까?')) {
+            const li = button.closest('li');
+            li.remove();
+        }
+    }
+
+    function extractCategories(ul) {
+        const result = [];
+        const lis = ul ? Array.from(ul.querySelectorAll(':scope > li')) : [];
+
+        lis.forEach((li, index) => {
+            const nameSpan = li.querySelector('.category-name-display');
+            const codeSpan = li.querySelector('.category-code-display');
+            const filterCheckbox = li.querySelector('.skin-type-filter-checkbox');
+            const name = nameSpan?.innerText.trim();
+            const code = codeSpan?.innerText.trim();
+            const showSkinFilter = filterCheckbox?.checked || false;
+            const childrenUl = li.querySelector('ul');
+
+            result.push({
+                name: name,
+                code: code,
+                order: index,
+                showSkinFilter: showSkinFilter,
+                children: extractCategories(childrenUl)
+            });
+        });
+        return result;
+    }
+
+
+    function sendCategories() {
+        const ul = document.getElementById('category-list-ul');
+        const data = extractCategories(ul);
+        console.log(data);  // 실제 데이터 확인용
+        axios.post('/api/v1/categories', data)
+            .then(res => {
+                console.log("저장됨")
+                console.log(res.data);
+                showModal();
+            })
+            .catch(err => {
+                alert('저장 실패');
+                console.error(err);
+            });
+    }
+
+    function initSortable() {
+        document.querySelectorAll('ul').forEach(ul => {
+            new Sortable(ul, {
+                group: 'nested',
+                animation: 150,
+                fallbackOnBody: true,
+                swapThreshold: 0.65
+            });
+        });
+    }
+
+    initSortable();
+</script>
+
+</body>
+</html>

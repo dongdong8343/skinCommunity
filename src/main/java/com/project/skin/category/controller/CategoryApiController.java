@@ -1,13 +1,13 @@
 package com.project.skin.category.controller;
 
+import com.project.skin.category.entities.Category;
 import com.project.skin.category.service.CategoryService;
-import com.project.skin.category.dto.AddCategory;
+import com.project.skin.category.dto.SaveCategory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -17,7 +17,12 @@ public class CategoryApiController {
     private final CategoryService categoryService;
 
     @PostMapping
-    public AddCategory.Response createCategory(@RequestBody AddCategory.Request request) {
-        return categoryService.createCategory(request);
+    public SaveCategory.Response createCategory(@RequestBody List<SaveCategory.Request> request) {
+
+        log.info(request.toString());
+
+        return categoryService.saveCategory(request);
     }
+
+
 }

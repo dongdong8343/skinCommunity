@@ -30,30 +30,33 @@ public class Category extends BaseTimeEntity {
     @Column(nullable = false)
     private String name;
 
-    private Category(String code, String name) {
+    @Column(nullable = false)
+    private Long categoryOrder;
+
+    @Column(nullable = false)
+    private Boolean showSkinFilter;
+
+    private Category(String code, String name, Long categoryOrder, Boolean showSkinFilter) {
         this.code = code;
         this.name = name;
+        this.categoryOrder = categoryOrder;
+        this.showSkinFilter = showSkinFilter;
     }
 
-    private Category(Category parent, String code, String name) {
-        this(code, name);
+    public static Category createCategory(String code, String name, Long order, Boolean showSkinFilter) {
+        return new Category(code, name, order, showSkinFilter);
+    }
+
+    public void addSubCategory(Category child) {
+        if (this.children.contains(child)) {
+            return;
+        }
+
+        this.children.add(child);
+        child.addParent(this);
+    }
+
+    public void addParent(Category parent) {
         this.parent = parent;
-    }
-
-    // 카테고리 생성 -> 하나로 합치는 구조
-    public static Category createCategory(String code, String name) {
-        return new Category(code, name);
-    }
-
-    // 서브 카테고리 생성
-    public static Category createSubCategory(Category parent, String code, String name) {
-        Category subCategory = new Category(parent, code, name);
-        parent.getChildren().add(subCategory);
-
-        return subCategory;
-    }
-
-    public void addChildrenCategory(Category subCategory) {
-        this.getChildren().add(subCategory);
     }
 }

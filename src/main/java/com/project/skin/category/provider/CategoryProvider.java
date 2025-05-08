@@ -5,6 +5,7 @@ import com.project.skin.category.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -16,7 +17,9 @@ public class CategoryProvider {
         return categoryRepository.findByCode(code);
     }
 
-    public Long saveCategory(Category category) {
+    public Category saveCategory(Category category) {
+        return categoryRepository.save(category);
+    }
 
 
         return categoryRepository.save(category).getId();
