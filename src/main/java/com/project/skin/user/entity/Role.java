@@ -1,4 +1,4 @@
-package com.project.skin.user.entities;
+package com.project.skin.user.entity;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.project.skin.user.entities;
+package com.project.skin.user.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

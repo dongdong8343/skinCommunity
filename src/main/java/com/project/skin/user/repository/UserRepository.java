@@ -1,6 +1,6 @@
 package com.project.skin.user.repository;
 
-import com.project.skin.user.entities.User;
+import com.project.skin.user.entity.User;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 

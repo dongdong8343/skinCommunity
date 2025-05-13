@@ -1,6 +1,6 @@
 package com.project.skin.auth.jwt.adapter;
 
-import com.project.skin.user.entities.User;
+import com.project.skin.user.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

@@ -1,6 +1,6 @@
 package com.project.skin.user.dto;
 
-import com.project.skin.user.entities.User;
+import com.project.skin.user.entity.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;

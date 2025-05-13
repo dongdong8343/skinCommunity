@@ -1,7 +1,7 @@
 package com.project.skin.auth.jwt.service;
 
 import com.project.skin.auth.jwt.provider.TokenProvider;
-import com.project.skin.user.entities.User;
+import com.project.skin.user.entity.User;
 import com.project.skin.auth.jwt.provider.RefreshTokenProvider;
 import com.project.skin.user.provider.UserProvider;
 import com.project.skin.auth.jwt.dto.CreateAccessToken;

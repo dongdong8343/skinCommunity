@@ -1,7 +1,7 @@
 package com.project.skin.user.provider;
 
 import com.project.skin.global.error.exception.UserNotFoundException;
-import com.project.skin.user.entities.User;
+import com.project.skin.user.entity.User;
 import com.project.skin.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

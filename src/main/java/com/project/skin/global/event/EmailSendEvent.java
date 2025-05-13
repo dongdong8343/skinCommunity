@@ -1,6 +1,6 @@
 package com.project.skin.global.event;
 
-import com.project.skin.user.entities.User;
+import com.project.skin.user.entity.User;
 import lombok.Getter;
 
 @Getter

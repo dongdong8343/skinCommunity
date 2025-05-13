@@ -1,6 +1,6 @@
 package com.project.skin.post;
 
-import com.project.skin.user.entities.User;
+import com.project.skin.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

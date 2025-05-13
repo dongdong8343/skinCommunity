@@ -1,4 +1,4 @@
-package com.project.skin.category.entities;
+package com.project.skin.category.entity;
 
 import com.project.skin.global.base.BaseTimeEntity;
 import jakarta.persistence.*;

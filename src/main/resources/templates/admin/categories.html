@@ -35,7 +35,50 @@
                     <h2 class="text-lg font-semibold text-gray-700">카테고리 목록</h2>
                     <button class="text-sm text-green-600 hover:underline" onclick="addCategory()">+ 상위 카테고리 추가</button>
                 </div>
-                <ul id="category-list-ul" class="space-y-3 ml-4"></ul>
+
+                <!-- Thymeleaf 데이터 렌더링 -->
+                <ul id="category-list-ul" class="space-y-3 ml-4"
+                    th:if="${categoryTree != null and !#lists.isEmpty(categoryTree)}">
+                    <li th:each="category : ${categoryTree}" class="category-item ml-2">
+                        <div class="flex items-center justify-between bg-white border p-2 rounded shadow-sm">
+                            <div class="flex flex-col flex-grow">
+                                <span class="category-name-display" th:text="${category.name}">카테고리명</span>
+                                <span class="text-xs text-gray-500 category-code-display" th:text="${category.code}">코드</span>
+                                <label class="text-sm text-gray-700 mt-1">
+                                    <input type="checkbox" class="skin-type-filter-checkbox mr-1"
+                                           th:checked="${category.showSkinFilter}">피부 타입 필터 사용
+                                </label>
+                            </div>
+                            <div class="flex space-x-2 ml-2">
+                                <button class="text-green-500 hover:underline" onclick="addSubCategory(this)">하위 추가</button>
+                                <button class="text-blue-500 hover:underline" onclick="editCategory(this)">수정</button>
+                                <button class="text-red-500 hover:underline" onclick="deleteCategory(this)">삭제</button>
+                            </div>
+                        </div>
+
+                        <!-- 하위 카테고리 재귀 렌더링 -->
+                        <ul class="ml-6 space-y-2" th:if="${category.children != null}">
+                            <li th:each="child : ${category.children}" class="category-item">
+                                <div class="flex items-center justify-between bg-white border p-2 rounded shadow-sm">
+                                    <div class="flex flex-col flex-grow">
+                                        <span class="category-name-display" th:text="${child.name}">하위카테고리명</span>
+                                        <span class="text-xs text-gray-500 category-code-display" th:text="${child.code}">하위코드</span>
+                                        <label class="text-sm text-gray-700 mt-1">
+                                            <input type="checkbox" class="skin-type-filter-checkbox mr-1"
+                                                   th:checked="${child.showSkinFilter}">피부 타입 필터 사용
+                                        </label>
+                                    </div>
+                                    <div class="flex space-x-2 ml-2">
+                                        <button class="text-green-500 hover:underline" onclick="addSubCategory(this)">하위 추가</button>
+                                        <button class="text-blue-500 hover:underline" onclick="editCategory(this)">수정</button>
+                                        <button class="text-red-500 hover:underline" onclick="deleteCategory(this)">삭제</button>
+                                    </div>
+                                </div>
+                                <!-- 필요시 하위 하위 카테고리도 추가 가능 -->
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
             </div>
 
             <div class="flex justify-end mt-8">
@@ -91,27 +134,26 @@
             newCategoryItem.classList.add('category-item', 'ml-2');
 
             newCategoryItem.innerHTML = `
-                <div class="flex items-center justify-between bg-white border p-2 rounded shadow-sm">
-                    <div class="flex flex-col flex-grow">
-                        <span class="category-name-display">${categoryName}</span>
-                        <span class="text-xs text-gray-500 category-code-display">${categoryCode}</span>
-                        <label class="text-sm text-gray-700 mt-1">
-                          <input type="checkbox" class="skin-type-filter-checkbox mr-1">
-                          피부 타입 필터 사용
-                        </label>
+                    <div class="flex items-center justify-between bg-white border p-2 rounded shadow-sm">
+                        <div class="flex flex-col flex-grow">
+                            <span class="category-name-display">${categoryName}</span>
+                            <span class="text-xs text-gray-500 category-code-display">${categoryCode}</span>
+                            <label class="text-sm text-gray-700 mt-1">
+                                <input type="checkbox" class="skin-type-filter-checkbox mr-1">
+                                    피부 타입 필터 사용
+                            </label>
+                        </div>
+                        <div class="flex space-x-2 ml-2">
+                            <button class="text-green-500 hover:underline" onclick="addSubCategory(this)">하위 추가</button>
+                            <button class="text-blue-500 hover:underline" onclick="editCategory(this)">수정</button>
+                            <button class="text-red-500 hover:underline" onclick="deleteCategory(this)">삭제</button>
+                        </div>
                     </div>
-                    <div class="flex space-x-2 ml-2">
-                        <button class="text-green-500 hover:underline" onclick="addSubCategory(this)">하위 추가</button>
-                        <button class="text-blue-500 hover:underline" onclick="editCategory(this)">수정</button>
-                        <button class="text-red-500 hover:underline" onclick="deleteCategory(this)">삭제</button>
-                    </div>
-                </div>
-                <ul class="ml-6 space-y-2"></ul>
-            `;
+                <ul class="ml-6 space-y-2"></ul>`;
 
-            categoryList.appendChild(newCategoryItem);
-            button.closest('.new-category').remove();
-            initSortable();
+        categoryList.appendChild(newCategoryItem);
+        button.closest('.new-category').remove();
+        initSortable();
         }
     }
 

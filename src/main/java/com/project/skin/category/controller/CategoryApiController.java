@@ -1,6 +1,6 @@
 package com.project.skin.category.controller;
 
-import com.project.skin.category.entities.Category;
+import com.project.skin.category.dto.ReadCategory;
 import com.project.skin.category.service.CategoryService;
 import com.project.skin.category.dto.SaveCategory;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +15,11 @@ import java.util.List;
 @RestController
 public class CategoryApiController {
     private final CategoryService categoryService;
+
+    @GetMapping
+    public ReadCategory.Response getCategories() {
+        return categoryService.getCategories();
+    }
 
     @PostMapping
     public SaveCategory.Response createCategory(@RequestBody List<SaveCategory.Request> request) {

@@ -1,7 +1,6 @@
 package com.project.skin.category.dto;
 
-import com.project.skin.category.entities.Category;
-import lombok.AllArgsConstructor;
+import com.project.skin.category.entity.Category;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;

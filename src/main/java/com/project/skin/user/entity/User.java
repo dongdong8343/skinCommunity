@@ -1,4 +1,4 @@
-package com.project.skin.user.entities;
+package com.project.skin.user.entity;
 
 import com.project.skin.global.base.BaseTimeEntity;
 import io.micrometer.common.util.StringUtils;

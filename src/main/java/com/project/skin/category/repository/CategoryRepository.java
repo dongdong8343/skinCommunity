@@ -1,6 +1,6 @@
 package com.project.skin.category.repository;
 
-import com.project.skin.category.entities.Category;
+import com.project.skin.category.entity.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
