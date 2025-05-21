@@ -1,4 +1,4 @@
-package com.project.skin.util;
+package com.project.skin.auth.jwt.util;
 
 
 import jakarta.servlet.http.Cookie;
