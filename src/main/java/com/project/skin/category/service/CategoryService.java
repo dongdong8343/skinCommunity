@@ -23,20 +23,31 @@ import org.springframework.transaction.annotation.Transactional;
 public class CategoryService {
 	private final CategoryProvider categoryProvider;
 
-    @Transactional
-    public SaveCategory.Response saveCategory(List<SaveCategory.Request> request) {
-        SaveCategory.Response response = new SaveCategory.Response();
+	@Transactional
+	public AddCategory.Response saveCategory(AddCategory.Request request) {
+		// 카테고리 코드 중복 검사
+		categoryProvider.findCategoryByCode(request.getCode());
 
-        for (SaveCategory.Request saveCategoryDto : request) {
-            response.addCategoryId(
-                    categoryProvider.saveCategory(
-                            SaveCategory.buildCategory(saveCategoryDto, saveCategoryDto.getChildren())
-                            ).getId()
-            );
-        }
+		// 부모 카테고리 찾기
+		Category parentCategory = categoryProvider.findCategoryById(request.getParentId()).orElse(null);
+		Category childCategory = null;
 
-        return response;
-    }
+		if (Objects.isNull(parentCategory)) { // 부모 카테고리 없는 경우 부모 카테고리 생성
+			parentCategory = request.toEntity();
+		} else { // 부모 카테고리 있는 경우 자식 카테고리 생성
+			childCategory = request.toEntity();
+			parentCategory.addSubCategory(childCategory);
+		}
+
+		categoryProvider.saveCategory(parentCategory);
+
+		Long categoryId = Objects.isNull(childCategory) ? parentCategory.getId() : childCategory.getId();
+
+		// 새로 만들어진 카테고리의 아이디 반환 -> 자식 카테고리를 저장하는 경우 db에는 저장이 되는데 id가 null로 반환됨...
+		return AddCategory.Response.builder()
+			.categoryId(categoryId)
+			.build();
+	}
 
 	@Transactional
 	public UpdateCategory.Response updateCategory(UpdateCategory.Request request) {
