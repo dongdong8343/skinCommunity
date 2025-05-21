@@ -4,7 +4,7 @@ import com.project.skin.auth.jwt.filter.TokenAuthenticationFilter;
 import com.project.skin.auth.jwt.provider.TokenProvider;
 import com.project.skin.auth.jwt.service.RefreshTokenService;
 import com.project.skin.user.service.UserDetailService;
-import com.project.skin.util.CookieUtil;
+import com.project.skin.auth.jwt.util.CookieUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,7 +33,7 @@ public class SecurityConfig {
         return http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers( // 아래 경로에 대한 접근 허용
-                                "/static/**", "/login", "/signup", "/api/v1/users/**"
+                                "/static/**", "/login", "/signup", "/api/v1/users/**", "/api/v1/categories/**"
                         ).permitAll()
                         .anyRequest().authenticated()) // 그외 모든 요청 인증 필요
                 .csrf(AbstractHttpConfigurer::disable)
