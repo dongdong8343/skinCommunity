@@ -1,6 +1,6 @@
 package com.project.skin.user.service;
 
-import com.project.skin.global.error.exception.InvalidPassword;
+import com.project.skin.global.error.exception.InvalidPasswordException;
 import com.project.skin.auth.jwt.dto.Token;
 import com.project.skin.auth.jwt.provider.TokenProvider;
 import com.project.skin.auth.jwt.entities.RefreshToken;
@@ -46,7 +46,7 @@ public class UserService {
         User user = userProvider.loadUserByEmail(request.getEmail());
 
         if (!bCryptPasswordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new InvalidPassword();
+            throw new InvalidPasswordException();
         }
 
         Token tokens = tokenProvider.generateTokens(
