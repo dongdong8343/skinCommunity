@@ -9,6 +9,9 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.annotations.DynamicUpdate;
+
+@DynamicUpdate
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
@@ -64,5 +67,9 @@ public class Category extends BaseTimeEntity {
 
     private void addParent(Category parent) {
         this.parent = parent;
+    }
+
+    public void updateCategoryOrder(Long categoryOrder) {
+        this.categoryOrder = categoryOrder;
     }
 }

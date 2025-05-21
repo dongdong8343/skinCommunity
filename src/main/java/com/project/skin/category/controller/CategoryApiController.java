@@ -1,6 +1,7 @@
 package com.project.skin.category.controller;
 
-import com.project.skin.category.dto.ReadCategory;
+import com.project.skin.category.dto.ReOrderCategory;
+import com.project.skin.category.dto.UpdateCategory;
 import com.project.skin.category.service.CategoryService;
 import com.project.skin.category.dto.SaveCategory;
 import lombok.RequiredArgsConstructor;
@@ -36,4 +37,8 @@ public class CategoryApiController {
         return categoryService.updateCategory(request);
     }
 
+    @PatchMapping("/order") // 만약 동시에 순서를 변경하는 요청이 들어오면 순서가 꼬이는 경우가 발생하지 않을까요?
+    public ReOrderCategory.Response reOrderCategories(@RequestBody ReOrderCategory.Request request) {
+        return categoryService.reOrderCategories(request);
+    }
 }

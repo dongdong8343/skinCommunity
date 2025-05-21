@@ -67,28 +67,26 @@ public class CategoryService {
 			.build();
 	}
 
-        // map에 다 집어넣는다.
-        HashMap<Long, ReadCategory.CategoryDetail> categoryDetailHashMap = new HashMap<>();
+	@Transactional
+	public ReOrderCategory.Response reOrderCategories(ReOrderCategory.Request request) {
+		List<Long> ids = new ArrayList<>();
 
-        categoryDetails.forEach(categoryDetail -> {
-            categoryDetailHashMap.put(categoryDetail.getId(), categoryDetail);
-        });
+		// request 순환하면서 해당 id에 맞는 카테고리 찾아온다.
+		// 해당 카테고리의 순서를 수정한다.
+		for (ReOrderCategory.OrderItem orderItem : request.getOrderItems()) {
+			log.info("카테고리 가져오기");
+			Category category = categoryProvider.findCategoryById(orderItem.getId())
+				.orElseThrow(CategoryNotFoundException::new);
 
-        // 리스트에 순서대로 집어넣는다.
-        for (ReadCategory.CategoryDetail categoryDetail : categoryDetails) {
-            Long parentId = categoryDetail.getParentId();
+			log.info("수정 시작");
+			category.updateCategoryOrder(orderItem.getNewOrder());
 
-            if (Objects.isNull(parentId)) {
-                response.getCategoryTree().add(categoryDetail);
-            } else {
-                ReadCategory.CategoryDetail parentCategoryDetail = categoryDetailHashMap.get(parentId);
-                parentCategoryDetail.getChildren().add(categoryDetail);
-            }
-        }
+			ids.add(orderItem.getId());
+		}
 
-        return response;
-    }
-
-
+		return ReOrderCategory.Response.builder()
+			.ids(ids)
+			.build();
+	}
 
 }
