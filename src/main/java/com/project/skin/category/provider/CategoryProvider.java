@@ -2,10 +2,11 @@ package com.project.skin.category.provider;
 
 import com.project.skin.category.entity.Category;
 import com.project.skin.category.repository.CategoryRepository;
+import com.project.skin.global.error.exception.DuplicateCategoryCodeException;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -13,16 +14,15 @@ import java.util.Optional;
 public class CategoryProvider {
     private final CategoryRepository categoryRepository;
 
-    public Optional<Category> findCategoryByCode(String code) {
-        return categoryRepository.findByCode(code);
+    public Category findCategoryByCode(String code) {
+        return categoryRepository.findByCode(code).orElseThrow(DuplicateCategoryCodeException::new);
+    }
+
+    public Optional<Category> findCategoryById(Long id) {
+        return categoryRepository.findById(id);
     }
 
     public Category saveCategory(Category category) {
         return categoryRepository.save(category);
-    }
-
-    public List<Category> getCategories() {
-        List<Category> categories = categoryRepository.findAll();
-        return categories;
     }
 }

@@ -1,7 +1,7 @@
-package com.project.skin.global.error.exception;
+package com.project.skin.global.error;
 
-import com.project.skin.global.error.ErrorCode;
-import com.project.skin.global.error.ErrorResponse;
+import com.project.skin.global.error.exception.BusinessBaseException;
+
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
