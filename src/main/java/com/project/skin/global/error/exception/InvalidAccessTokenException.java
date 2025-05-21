@@ -2,13 +2,13 @@ package com.project.skin.global.error.exception;
 
 import com.project.skin.global.error.ErrorCode;
 
-public class InvalidAccessToken extends BusinessBaseException {
+public class InvalidAccessTokenException extends BusinessBaseException {
 
-  public InvalidAccessToken(ErrorCode errorCode) {
+  public InvalidAccessTokenException(ErrorCode errorCode) {
     super(errorCode);
   }
 
-  public InvalidAccessToken() {
+  public InvalidAccessTokenException() {
     super(ErrorCode.INVALID_ACCESS_TOKEN);
   }
 }

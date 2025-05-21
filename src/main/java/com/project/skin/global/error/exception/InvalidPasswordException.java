@@ -2,13 +2,13 @@ package com.project.skin.global.error.exception;
 
 import com.project.skin.global.error.ErrorCode;
 
-public class InvalidPassword extends BusinessBaseException {
+public class InvalidPasswordException extends BusinessBaseException {
 
-    public InvalidPassword(ErrorCode code) {
+    public InvalidPasswordException(ErrorCode code) {
         super(code);
     }
 
-    public InvalidPassword() {
+    public InvalidPasswordException() {
         super(ErrorCode.INVALID_PASSWORD);
     }
 }

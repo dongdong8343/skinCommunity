@@ -1,6 +1,6 @@
 package com.project.skin.auth.jwt.provider;
 
-import com.project.skin.global.error.exception.InvalidRefreshToken;
+import com.project.skin.global.error.exception.InvalidRefreshTokenException;
 import com.project.skin.auth.jwt.entities.RefreshToken;
 import com.project.skin.auth.jwt.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ public class RefreshTokenProvider {
 
     public RefreshToken findByRefreshToken(String refreshToken) {
         return refreshTokenRepository.findByRefreshToken(refreshToken)
-                .orElseThrow(InvalidRefreshToken::new);
+                .orElseThrow(InvalidRefreshTokenException::new);
     }
 
     public void saveRefreshToken(RefreshToken refreshToken) {
