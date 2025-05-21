@@ -31,4 +31,11 @@ public class CategoryApiController {
     public ReOrderCategory.Response reOrderCategories(@RequestBody ReOrderCategory.Request request) {
         return categoryService.reOrderCategories(request);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteCategory(@PathVariable("id") Long id) {
+        categoryService.deleteCategory(id);
+
+        return ResponseEntity.ok("삭제가 완료됐습니다.");
+    }
 }

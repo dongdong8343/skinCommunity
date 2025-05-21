@@ -21,9 +21,6 @@ public class AdminViewController {
 
     @GetMapping("/categories")
     public String getCategoryManagementPage(Model model) {
-        ReadCategory.Response categoryTree = categoryService.getCategories();
-
-        model.addAttribute("categoryTree", categoryTree.getCategoryTree());
 
         return "admin/categories";
     }

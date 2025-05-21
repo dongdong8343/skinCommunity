@@ -100,4 +100,12 @@ public class CategoryService {
 			.build();
 	}
 
+	@Transactional
+	public void deleteCategory(Long id) {
+		Category category = categoryProvider.findCategoryById(id)
+			.orElseThrow(CategoryNotFoundException::new);
+
+		category.delete();
+	}
+
 }
