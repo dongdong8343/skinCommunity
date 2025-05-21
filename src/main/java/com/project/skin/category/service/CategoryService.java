@@ -1,24 +1,27 @@
 package com.project.skin.category.service;
 
-import com.project.skin.category.dto.ReadCategory;
-import com.project.skin.category.dto.SaveCategory;
-import com.project.skin.category.entity.Category;
-import com.project.skin.category.provider.CategoryProvider;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+
+import com.project.skin.category.dto.AddCategory;
+import com.project.skin.category.dto.ReOrderCategory;
+import com.project.skin.category.dto.UpdateCategory;
+import com.project.skin.category.entity.Category;
+import com.project.skin.category.provider.CategoryProvider;
+import com.project.skin.global.error.exception.CategoryNotFoundException;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Log4j2
 @RequiredArgsConstructor
 @Service
 public class CategoryService {
-    private final CategoryProvider categoryProvider;
+	private final CategoryProvider categoryProvider;
 
     @Transactional
     public SaveCategory.Response saveCategory(List<SaveCategory.Request> request) {
@@ -35,29 +38,34 @@ public class CategoryService {
         return response;
     }
 
-    @Transactional
-    public ReadCategory.Response getCategories() {
-        ReadCategory.Response response = new ReadCategory.Response();
+	@Transactional
+	public UpdateCategory.Response updateCategory(UpdateCategory.Request request) {
+		categoryProvider.findCategoryByCode(request.getCode());
 
-        List<Category> categories = categoryProvider.getCategories();
+		Category category = categoryProvider.findCategoryById(request.getId()).orElseThrow(CategoryNotFoundException::new);
 
-        for (Category category : categories) {
-            log.info(category.getId());
-        }
+		// parentId로 newParent 찾기
+		Category newParent = null;
+		if(Objects.nonNull(request.getParentId())) {
+			newParent = categoryProvider.findCategoryById(request.getParentId()).orElseThrow(CategoryNotFoundException::new);
+		}
 
-        // category dto를 리스트로 만든다.
-        List<ReadCategory.CategoryDetail> categoryDetails = new ArrayList<>();
+		// category.update(속성들 넘겨주기)
+		category.update(request.getName(), request.getCode(), request.getShowSkinFilter());
 
-        categories.forEach(category -> {
-            categoryDetails.add(ReadCategory.CategoryDetail.builder()
-                    .id(category.getId())
-                    .parentId(category.getParent() == null ? null : category.getParent().getId())
-                    .code(category.getCode())
-                    .name(category.getName())
-                    .categoryOrder(category.getCategoryOrder())
-                    .showSkinFilter(category.getShowSkinFilter())
-                    .build());
-        });
+		// parentId가 null이 아니고 기존 부모 id와 다른 경우 부모 - 자식 관계 수정
+		if (Objects.nonNull(newParent) && !Objects.equals(newParent.getId(), category.getParent().getId())) {
+			Category oldParent = category.getParent();
+
+			oldParent.getChildren().removeIf(child -> Objects.equals(child.getId(), request.getId()));
+
+			newParent.addSubCategory(category);
+		}
+
+		return UpdateCategory.Response.builder()
+			.id(category.getId())
+			.build();
+	}
 
         // map에 다 집어넣는다.
         HashMap<Long, ReadCategory.CategoryDetail> categoryDetailHashMap = new HashMap<>();

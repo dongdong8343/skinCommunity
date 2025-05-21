@@ -47,6 +47,12 @@ public class Category extends BaseTimeEntity {
         return new Category(code, name, order, showSkinFilter);
     }
 
+    public void update(String name, String code, Boolean showSkinFilter) {
+        this.name = name;
+        this.code = code;
+        this.showSkinFilter = showSkinFilter;
+    }
+
     public void addSubCategory(Category child) {
         if (this.children.contains(child)) {
             return;
@@ -56,7 +62,7 @@ public class Category extends BaseTimeEntity {
         child.addParent(this);
     }
 
-    public void addParent(Category parent) {
+    private void addParent(Category parent) {
         this.parent = parent;
     }
 }

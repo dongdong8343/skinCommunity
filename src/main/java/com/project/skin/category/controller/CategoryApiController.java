@@ -5,6 +5,8 @@ import com.project.skin.category.service.CategoryService;
 import com.project.skin.category.dto.SaveCategory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,5 +31,9 @@ public class CategoryApiController {
         return categoryService.saveCategory(request);
     }
 
+    @PatchMapping
+    public UpdateCategory.Response updateCategory(@RequestBody UpdateCategory.Request request) {
+        return categoryService.updateCategory(request);
+    }
 
 }
