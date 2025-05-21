@@ -4,7 +4,7 @@ import com.project.skin.auth.jwt.dto.CreateAccessToken;
 import com.project.skin.auth.jwt.provider.TokenProvider;
 import com.project.skin.auth.jwt.service.RefreshTokenService;
 import com.project.skin.auth.jwt.dto.TokenType;
-import com.project.skin.util.CookieUtil;
+import com.project.skin.auth.jwt.util.CookieUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
