@@ -4,7 +4,7 @@ import com.project.skin.auth.jwt.dto.TokenType;
 import com.project.skin.user.dto.Login;
 import com.project.skin.user.service.UserService;
 import com.project.skin.user.dto.AddUser;
-import com.project.skin.util.CookieUtil;
+import com.project.skin.auth.jwt.util.CookieUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
