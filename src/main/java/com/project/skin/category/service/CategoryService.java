@@ -9,7 +9,6 @@ import com.project.skin.category.dto.ReOrderCategory;
 import com.project.skin.category.dto.UpdateCategory;
 import com.project.skin.category.entity.Category;
 import com.project.skin.category.provider.CategoryProvider;
-import com.project.skin.global.error.exception.CategoryNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -29,7 +28,7 @@ public class CategoryService {
 		categoryProvider.findCategoryByCode(request.getCode());
 
 		// 부모 카테고리 찾기
-		Category parentCategory = categoryProvider.findCategoryById(request.getParentId()).orElse(null);
+		Category parentCategory = categoryProvider.findCategoryByIdOrNull(request.getParentId());
 		Category childCategory = null;
 
 		if (Objects.isNull(parentCategory)) { // 부모 카테고리 없는 경우 부모 카테고리 생성
@@ -53,12 +52,12 @@ public class CategoryService {
 	public UpdateCategory.Response updateCategory(UpdateCategory.Request request) {
 		categoryProvider.findCategoryByCode(request.getCode());
 
-		Category category = categoryProvider.findCategoryById(request.getId()).orElseThrow(CategoryNotFoundException::new);
+		Category category = categoryProvider.findCategoryByIdOrThrow(request.getId());
 
 		// parentId로 newParent 찾기
 		Category newParent = null;
 		if(Objects.nonNull(request.getParentId())) {
-			newParent = categoryProvider.findCategoryById(request.getParentId()).orElseThrow(CategoryNotFoundException::new);
+			newParent = categoryProvider.findCategoryByIdOrThrow(request.getParentId());
 		}
 
 		// category.update(속성들 넘겨주기)
@@ -86,8 +85,7 @@ public class CategoryService {
 		// 해당 카테고리의 순서를 수정한다.
 		for (ReOrderCategory.OrderItem orderItem : request.getOrderItems()) {
 			log.info("카테고리 가져오기");
-			Category category = categoryProvider.findCategoryById(orderItem.getId())
-				.orElseThrow(CategoryNotFoundException::new);
+			Category category = categoryProvider.findCategoryByIdOrThrow(orderItem.getId());
 
 			log.info("수정 시작");
 			category.updateCategoryOrder(orderItem.getNewOrder());
@@ -102,8 +100,7 @@ public class CategoryService {
 
 	@Transactional
 	public void deleteCategory(Long id) {
-		Category category = categoryProvider.findCategoryById(id)
-			.orElseThrow(CategoryNotFoundException::new);
+		Category category = categoryProvider.findCategoryByIdOrThrow(id);
 
 		category.delete();
 	}
