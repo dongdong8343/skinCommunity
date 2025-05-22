@@ -1,5 +1,6 @@
 package com.project.skin.category.controller;
 
+import com.project.skin.category.dto.CategoryList;
 import com.project.skin.category.dto.ReOrderCategory;
 import com.project.skin.category.dto.UpdateCategory;
 import com.project.skin.category.service.CategoryService;
@@ -16,6 +17,11 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class CategoryApiController {
     private final CategoryService categoryService;
+
+    @GetMapping
+    public CategoryList.Response getCategories(@RequestParam(value = "parentId", required = false) Long parentId) {
+        return categoryService.getCategories(parentId);
+    }
 
     @PostMapping
     public AddCategory.Response createCategory(@RequestBody AddCategory.Request request) {

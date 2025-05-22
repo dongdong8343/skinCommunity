@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 import com.project.skin.category.dto.AddCategory;
+import com.project.skin.category.dto.CategoryList;
 import com.project.skin.category.dto.ReOrderCategory;
 import com.project.skin.category.dto.UpdateCategory;
 import com.project.skin.category.entity.Category;
@@ -21,6 +22,19 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class CategoryService {
 	private final CategoryProvider categoryProvider;
+
+	@Transactional(readOnly = true)
+	public CategoryList.Response getCategories(Long parentId) {
+		// + deletedAt이 null인 카테고리만 찾기
+		// parentId가 null이면 parentId가 null인 카테고리 찾기
+
+		// 그게 아니라면 parentId에 해당하는 카테고리 찾기
+		List<Category> categories = categoryProvider.getCategoriesByParentId(parentId);
+
+		return CategoryList.Response.builder()
+			.categoryItems(categories.stream().map(CategoryList.CategoryItem::from).toList())
+			.build();
+	}
 
 	@Transactional
 	public AddCategory.Response saveCategory(AddCategory.Request request) {
