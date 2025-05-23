@@ -1,10 +1,10 @@
 package com.project.skin.category.controller;
 
-import com.project.skin.category.dto.CategoryList;
-import com.project.skin.category.dto.ReOrderCategory;
-import com.project.skin.category.dto.UpdateCategory;
+import com.project.skin.category.service.dto.CategoryList;
+import com.project.skin.category.service.dto.ReOrderCategory;
+import com.project.skin.category.service.dto.UpdateCategory;
 import com.project.skin.category.service.CategoryService;
-import com.project.skin.category.dto.AddCategory;
+import com.project.skin.category.service.dto.AddCategory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -28,9 +28,9 @@ public class CategoryApiController {
         return categoryService.saveCategory(request);
     }
 
-    @PatchMapping
-    public UpdateCategory.Response updateCategory(@RequestBody UpdateCategory.Request request) {
-        return categoryService.updateCategory(request);
+    @PatchMapping("/{categoryId}")
+    public UpdateCategory.Response updateCategory(@PathVariable Long categoryId, @RequestBody UpdateCategory.Request request) {
+        return categoryService.updateCategory(categoryId,request);
     }
 
     @PatchMapping("/order") // 만약 동시에 순서를 변경하는 요청이 들어오면 순서가 꼬이는 경우가 발생하지 않을까요?
@@ -38,10 +38,10 @@ public class CategoryApiController {
         return categoryService.reOrderCategories(request);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteCategory(@PathVariable("id") Long id) {
-        categoryService.deleteCategory(id);
+    @DeleteMapping("/{categoryId}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable("id") Long categoryId) {
+        categoryService.deleteCategory(categoryId);
 
-        return ResponseEntity.ok("삭제가 완료됐습니다.");
+        return ResponseEntity.noContent().build();
     }
 }

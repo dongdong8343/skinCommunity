@@ -8,10 +8,12 @@ import com.project.skin.user.entity.Role;
 import com.project.skin.user.entity.User;
 import com.project.skin.global.event.EmailSendEvent;
 import com.project.skin.auth.jwt.provider.RefreshTokenProvider;
+import com.project.skin.user.entity.UserRole;
 import com.project.skin.user.provider.UserProvider;
 import com.project.skin.user.dto.AddUser;
 import com.project.skin.user.dto.Login;
 import com.project.skin.user.validator.CreateUserValidate;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.ApplicationEventPublisher;
@@ -76,16 +78,13 @@ public class UserService {
         User user = User.createBasicUser(request.getEmail(), encryptedPassword, request.getNickname());
 
         User savedUser = userProvider.createUser(user);
-
-        applicationEventPublisher.publishEvent(EmailSendEvent.singUp(savedUser));
-
         return AddUser.toResponse(savedUser);
     }
 
     @Transactional
-    public void grantRole(Long userId, String role) {
+    public void grantRole(Long userId, UserRole role) {
         User user = userProvider.loadUserById(userId);
-        user.grantRole(Role.valueOf("ROLE_" + role));
+        user.grantRole(role.getRole());
     }
 }
 

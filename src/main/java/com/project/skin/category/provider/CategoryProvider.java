@@ -23,13 +23,13 @@ public class CategoryProvider {
         return categoryRepository.findByCode(code).orElseThrow(DuplicateCategoryCodeException::new);
     }
 
-    public Category findCategoryByIdOrThrow(Long id) {
-        return categoryRepository.findById(id)
+    public Category findCategoryByIdOrThrow(Long categoryId) {
+        return categoryRepository.findById(categoryId)
             .orElseThrow(CategoryNotFoundException::new);
     }
 
-    public Category findCategoryByIdOrNull(Long id) {
-        return categoryRepository.findById(id)
+    public Category findCategoryByIdOrNull(Long categoryId) {
+        return categoryRepository.findById(categoryId)
             .orElse(null);
     }
 

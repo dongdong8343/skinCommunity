@@ -21,12 +21,10 @@ public class AddUser {
 
     @Getter
     public static class Response {
-        private Long id;
         private String email;
         private String nickname;
 
         private Response(Long id, String email, String nickname) {
-            this.id = id;
             this.email = email;
             this.nickname = nickname;
         }

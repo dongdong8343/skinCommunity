@@ -1,4 +1,4 @@
-package com.project.skin.category.dto;
+package com.project.skin.category.service.dto;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -8,7 +8,6 @@ public class UpdateCategory {
 	@Getter
 	@NoArgsConstructor
 	public static class Request {
-		private Long id;
 		private String name;
 		private String code;
 		private Boolean showSkinFilter;

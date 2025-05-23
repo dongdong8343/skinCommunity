@@ -1,6 +1,5 @@
 package com.project.skin.admin.controller;
 
-import com.project.skin.category.dto.ReadCategory;
 import com.project.skin.category.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;

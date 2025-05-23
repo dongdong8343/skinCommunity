@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import com.project.skin.category.dto.AddCategory;
-import com.project.skin.category.dto.CategoryList;
-import com.project.skin.category.dto.ReOrderCategory;
-import com.project.skin.category.dto.UpdateCategory;
+import com.project.skin.category.service.dto.AddCategory;
+import com.project.skin.category.service.dto.CategoryList;
+import com.project.skin.category.service.dto.ReOrderCategory;
+import com.project.skin.category.service.dto.UpdateCategory;
 import com.project.skin.category.entity.Category;
 import com.project.skin.category.provider.CategoryProvider;
 
@@ -31,9 +31,7 @@ public class CategoryService {
 		// 그게 아니라면 parentId에 해당하는 카테고리 찾기
 		List<Category> categories = categoryProvider.getCategoriesByParentId(parentId);
 
-		return CategoryList.Response.builder()
-			.categoryItems(categories.stream().map(CategoryList.CategoryItem::from).toList())
-			.build();
+		return CategoryList.toResponse(categories);
 	}
 
 	@Transactional
@@ -45,10 +43,12 @@ public class CategoryService {
 		Category parentCategory = categoryProvider.findCategoryByIdOrNull(request.getParentId());
 		Category childCategory = null;
 
+		Category entity = request.toEntity();
+
 		if (Objects.isNull(parentCategory)) { // 부모 카테고리 없는 경우 부모 카테고리 생성
-			parentCategory = request.toEntity();
+			parentCategory = entity;
 		} else { // 부모 카테고리 있는 경우 자식 카테고리 생성
-			childCategory = request.toEntity();
+			childCategory = entity;
 			parentCategory.addSubCategory(childCategory);
 		}
 
@@ -63,10 +63,10 @@ public class CategoryService {
 	}
 
 	@Transactional
-	public UpdateCategory.Response updateCategory(UpdateCategory.Request request) {
+	public UpdateCategory.Response updateCategory(Long categoryId, UpdateCategory.Request request) {
 		categoryProvider.findCategoryByCode(request.getCode());
 
-		Category category = categoryProvider.findCategoryByIdOrThrow(request.getId());
+		Category category = categoryProvider.findCategoryByIdOrThrow(categoryId);
 
 		// parentId로 newParent 찾기
 		Category newParent = null;
@@ -81,7 +81,7 @@ public class CategoryService {
 		if (Objects.nonNull(newParent) && !Objects.equals(newParent.getId(), category.getParent().getId())) {
 			Category oldParent = category.getParent();
 
-			oldParent.getChildren().removeIf(child -> Objects.equals(child.getId(), request.getId()));
+			oldParent.getChildren().removeIf(child -> Objects.equals(child.getId(), categoryId));
 
 			newParent.addSubCategory(category);
 		}

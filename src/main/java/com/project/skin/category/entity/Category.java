@@ -72,4 +72,8 @@ public class Category extends BaseTimeEntity {
     public void updateCategoryOrder(Long categoryOrder) {
         this.categoryOrder = categoryOrder;
     }
+
+    public Long parentId() {
+        return this.parent.getId();
+    }
 }

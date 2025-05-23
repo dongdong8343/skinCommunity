@@ -1,9 +1,11 @@
 package com.project.skin.user.provider;
 
 import com.project.skin.global.error.exception.UserNotFoundException;
+import com.project.skin.global.event.EmailSendEvent;
 import com.project.skin.user.entity.User;
 import com.project.skin.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +16,7 @@ import java.util.Optional;
 @Component
 public class UserProvider {
     private final UserRepository userRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     public User loadUserByEmail(String email) {
         return userRepository.findByEmail(email)
@@ -34,7 +37,10 @@ public class UserProvider {
     }
 
     public User createUser(User user) {
-        return userRepository.save(user);
+
+        User userEntity = userRepository.save(user);
+        applicationEventPublisher.publishEvent(EmailSendEvent.singUp(userEntity));
+        return userEntity;
     }
 }
 

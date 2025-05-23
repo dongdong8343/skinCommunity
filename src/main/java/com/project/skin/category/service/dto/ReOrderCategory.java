@@ -1,4 +1,4 @@
-package com.project.skin.category.dto;
+package com.project.skin.category.service.dto;
 
 import java.util.List;
 

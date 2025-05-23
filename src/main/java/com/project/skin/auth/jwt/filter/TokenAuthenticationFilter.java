@@ -10,6 +10,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpHeaders;
@@ -31,13 +32,13 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         log.info("------------------------------------필터 동작합니다.");
-        String accessToken = getToken(request, TokenType.ACCESS_TOKEN.getTokenType());
+        String accessToken = getToken(request, TokenType.ACCESS_TOKEN);
 
         if (tokenProvider.validToken(accessToken)) {
             Authentication authentication = tokenProvider.getAuthentication(accessToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } else {
-            String refreshToken = getToken(request, TokenType.REFRESH_TOKEN.getTokenType());
+            String refreshToken = getToken(request, TokenType.REFRESH_TOKEN);
             if (tokenProvider.validToken(refreshToken)) {
                 CreateAccessToken.Response createAccessToken = refreshTokenService.createNewAccessToken(refreshToken);
                 accessToken = createAccessToken.getAccessToken();
@@ -52,26 +53,23 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private String getToken(HttpServletRequest request, String tokenType) {
+    private String getToken(HttpServletRequest request, TokenType tokenType) {
         String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        String accessToken = null;
 
         if (authorizationHeader != null && authorizationHeader.startsWith(TOKEN_PREFIX)) {
-            accessToken = authorizationHeader.substring(TOKEN_PREFIX.length());
-        } else {
-            Cookie[] cookies = request.getCookies();
-
-            if (cookies != null) {
-                for (Cookie cookie : cookies) {
-                    if (cookie.getName().equals(tokenType)) {
-                        accessToken = cookie.getValue();
-                        break;
-                    }
-                }
-            }
-
+            return authorizationHeader.substring(TOKEN_PREFIX.length());
         }
 
-        return accessToken;
+        Cookie[] cookies = request.getCookies();
+
+        if (Objects.nonNull(cookies)) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals(tokenType.getTokenType())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+
+        return null;
     }
 }
