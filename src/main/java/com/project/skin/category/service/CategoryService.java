@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import com.project.skin.category.dto.AddCategory;
-import com.project.skin.category.dto.CategoryList;
-import com.project.skin.category.dto.ReOrderCategory;
-import com.project.skin.category.dto.UpdateCategory;
+import com.project.skin.category.service.dto.AddCategory;
+import com.project.skin.category.service.dto.CategoryList;
+import com.project.skin.category.service.dto.ReOrderCategory;
+import com.project.skin.category.service.dto.UpdateCategory;
 import com.project.skin.category.entity.Category;
 import com.project.skin.category.provider.CategoryProvider;
+import com.project.skin.category.validator.CreateCategoryValidate;
+import com.project.skin.global.error.exception.DuplicateCategoryCodeException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -22,33 +24,30 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class CategoryService {
 	private final CategoryProvider categoryProvider;
+	private final CreateCategoryValidate createCategoryValidate;
 
 	@Transactional(readOnly = true)
 	public CategoryList.Response getCategories(Long parentId) {
-		// + deletedAt이 null인 카테고리만 찾기
-		// parentId가 null이면 parentId가 null인 카테고리 찾기
-
-		// 그게 아니라면 parentId에 해당하는 카테고리 찾기
 		List<Category> categories = categoryProvider.getCategoriesByParentId(parentId);
 
-		return CategoryList.Response.builder()
-			.categoryItems(categories.stream().map(CategoryList.CategoryItem::from).toList())
-			.build();
+		return CategoryList.toCategoryList(categories);
 	}
 
 	@Transactional
 	public AddCategory.Response saveCategory(AddCategory.Request request) {
-		// 카테고리 코드 중복 검사
-		categoryProvider.findCategoryByCode(request.getCode());
+		// 카테고리 중복 검사
+		createCategoryValidate.validateCategoryCode(request.getCode());
 
 		// 부모 카테고리 찾기
 		Category parentCategory = categoryProvider.findCategoryByIdOrNull(request.getParentId());
 		Category childCategory = null;
 
+		Category entity = request.toEntity();
+
 		if (Objects.isNull(parentCategory)) { // 부모 카테고리 없는 경우 부모 카테고리 생성
-			parentCategory = request.toEntity();
+			parentCategory = entity;
 		} else { // 부모 카테고리 있는 경우 자식 카테고리 생성
-			childCategory = request.toEntity();
+			childCategory = entity;
 			parentCategory.addSubCategory(childCategory);
 		}
 
@@ -63,10 +62,10 @@ public class CategoryService {
 	}
 
 	@Transactional
-	public UpdateCategory.Response updateCategory(UpdateCategory.Request request) {
+	public UpdateCategory.Response updateCategory(Long categoryId, UpdateCategory.Request request) {
 		categoryProvider.findCategoryByCode(request.getCode());
 
-		Category category = categoryProvider.findCategoryByIdOrThrow(request.getId());
+		Category category = categoryProvider.findCategoryByIdOrThrow(categoryId);
 
 		// parentId로 newParent 찾기
 		Category newParent = null;
@@ -74,14 +73,13 @@ public class CategoryService {
 			newParent = categoryProvider.findCategoryByIdOrThrow(request.getParentId());
 		}
 
-		// category.update(속성들 넘겨주기)
 		category.update(request.getName(), request.getCode(), request.getShowSkinFilter());
 
 		// parentId가 null이 아니고 기존 부모 id와 다른 경우 부모 - 자식 관계 수정
 		if (Objects.nonNull(newParent) && !Objects.equals(newParent.getId(), category.getParent().getId())) {
 			Category oldParent = category.getParent();
 
-			oldParent.getChildren().removeIf(child -> Objects.equals(child.getId(), request.getId()));
+			oldParent.getChildren().removeIf(child -> Objects.equals(child.getId(), categoryId));
 
 			newParent.addSubCategory(category);
 		}

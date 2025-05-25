@@ -1,8 +1,8 @@
 package com.project.skin.auth.jwt.provider;
 
-import com.project.skin.auth.jwt.dto.CreateAccessToken;
+import com.project.skin.auth.jwt.service.dto.CreateAccessToken;
 import com.project.skin.auth.jwt.config.JwtProperties;
-import com.project.skin.auth.jwt.dto.Token;
+import com.project.skin.auth.jwt.service.dto.Token;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jwts;

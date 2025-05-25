@@ -3,7 +3,7 @@ package com.project.skin.user.validator;
 import com.project.skin.global.error.exception.DuplicateEmailException;
 import com.project.skin.global.error.exception.DuplicateNicknameException;
 import com.project.skin.user.provider.UserProvider;
-import com.project.skin.user.dto.AddUser;
+import com.project.skin.user.service.dto.AddUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

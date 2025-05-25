@@ -1,20 +1,18 @@
 package com.project.skin.user.service;
 
 import com.project.skin.global.error.exception.InvalidPasswordException;
-import com.project.skin.auth.jwt.dto.Token;
+import com.project.skin.auth.jwt.service.dto.Token;
 import com.project.skin.auth.jwt.provider.TokenProvider;
 import com.project.skin.auth.jwt.entities.RefreshToken;
-import com.project.skin.user.entity.Role;
 import com.project.skin.user.entity.User;
-import com.project.skin.global.event.EmailSendEvent;
 import com.project.skin.auth.jwt.provider.RefreshTokenProvider;
+import com.project.skin.user.entity.UserRole;
 import com.project.skin.user.provider.UserProvider;
-import com.project.skin.user.dto.AddUser;
-import com.project.skin.user.dto.Login;
+import com.project.skin.user.service.dto.AddUser;
+import com.project.skin.user.service.dto.Login;
 import com.project.skin.user.validator.CreateUserValidate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +27,6 @@ public class UserService {
     private final RefreshTokenProvider refreshTokenProvider;
     private final CreateUserValidate createUserValidate;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Transactional(readOnly = true)
     public void checkEmail(String email) {
@@ -77,15 +74,13 @@ public class UserService {
 
         User savedUser = userProvider.createUser(user);
 
-        applicationEventPublisher.publishEvent(EmailSendEvent.singUp(savedUser));
-
         return AddUser.toResponse(savedUser);
     }
 
     @Transactional
-    public void grantRole(Long userId, String role) {
+    public void grantRole(Long userId, UserRole role) {
         User user = userProvider.loadUserById(userId);
-        user.grantRole(Role.valueOf("ROLE_" + role));
+        user.grantRole(role.getRole());
     }
 }
 

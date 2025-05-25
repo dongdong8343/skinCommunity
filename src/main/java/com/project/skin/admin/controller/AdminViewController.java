@@ -1,6 +1,5 @@
 package com.project.skin.admin.controller;
 
-import com.project.skin.category.dto.ReadCategory;
 import com.project.skin.category.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -12,8 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 @RequestMapping("/admin")
 public class AdminViewController {
-    private final CategoryService categoryService;
-
     @GetMapping
     public String adminHome() {
         return "admin/home";

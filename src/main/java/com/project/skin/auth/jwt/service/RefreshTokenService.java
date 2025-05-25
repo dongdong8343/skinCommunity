@@ -4,7 +4,7 @@ import com.project.skin.auth.jwt.provider.TokenProvider;
 import com.project.skin.user.entity.User;
 import com.project.skin.auth.jwt.provider.RefreshTokenProvider;
 import com.project.skin.user.provider.UserProvider;
-import com.project.skin.auth.jwt.dto.CreateAccessToken;
+import com.project.skin.auth.jwt.service.dto.CreateAccessToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

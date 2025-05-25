@@ -1,9 +1,10 @@
 package com.project.skin.user.controller;
 
-import com.project.skin.auth.jwt.dto.TokenType;
-import com.project.skin.user.dto.Login;
+import com.project.skin.auth.jwt.service.dto.TokenType;
+import com.project.skin.user.entity.UserRole;
+import com.project.skin.user.service.dto.Login;
 import com.project.skin.user.service.UserService;
-import com.project.skin.user.dto.AddUser;
+import com.project.skin.user.service.dto.AddUser;
 import com.project.skin.auth.jwt.util.CookieUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -55,7 +56,7 @@ public class UserApiController {
     }
 
     @PostMapping("{userId}/role/{role}")
-    public ResponseEntity<String> grantRole(@PathVariable Long userId, @PathVariable String role) {
+    public ResponseEntity<String> grantRole(@PathVariable Long userId, @PathVariable UserRole role) {
         userService.grantRole(userId, role);
 
         return ResponseEntity.ok("관리자 권한이 부여됐습니다.");

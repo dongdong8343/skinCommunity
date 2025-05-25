@@ -1,6 +1,7 @@
 package com.project.skin.category.provider;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.project.skin.category.entity.Category;
 import com.project.skin.category.repository.CategoryRepository;
@@ -19,17 +20,17 @@ public class CategoryProvider {
         return categoryRepository.findByParentIdNullable(parentId);
     }
 
-    public Category findCategoryByCode(String code) {
-        return categoryRepository.findByCode(code).orElseThrow(DuplicateCategoryCodeException::new);
+    public Optional<Category> findCategoryByCode(String code) { //수정 필요 -> 없으면 duplicate 하도록 하고있음...
+        return categoryRepository.findByCode(code);
     }
 
-    public Category findCategoryByIdOrThrow(Long id) {
-        return categoryRepository.findById(id)
+    public Category findCategoryByIdOrThrow(Long categoryId) {
+        return categoryRepository.findById(categoryId)
             .orElseThrow(CategoryNotFoundException::new);
     }
 
-    public Category findCategoryByIdOrNull(Long id) {
-        return categoryRepository.findById(id)
+    public Category findCategoryByIdOrNull(Long categoryId) {
+        return categoryRepository.findById(categoryId)
             .orElse(null);
     }
 
