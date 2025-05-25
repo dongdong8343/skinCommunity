@@ -1,4 +1,4 @@
-package com.project.skin.user.dto;
+package com.project.skin.user.service.dto;
 
 import com.project.skin.user.entity.User;
 import jakarta.validation.constraints.Email;
@@ -21,18 +21,16 @@ public class AddUser {
 
     @Getter
     public static class Response {
-        private Long id;
         private String email;
         private String nickname;
 
-        private Response(Long id, String email, String nickname) {
-            this.id = id;
+        private Response(String email, String nickname) {
             this.email = email;
             this.nickname = nickname;
         }
     }
 
     public static Response toResponse(User user) {
-        return new Response(user.getId(), user.getEmail(), user.getNickname());
+        return new Response(user.getEmail(), user.getNickname());
     }
 }

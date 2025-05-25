@@ -1,4 +1,4 @@
-package com.project.skin.auth.jwt.dto;
+package com.project.skin.auth.jwt.service.dto;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

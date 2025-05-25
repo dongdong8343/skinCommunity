@@ -1,4 +1,4 @@
-package com.project.skin.user.dto;
+package com.project.skin.user.service.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
