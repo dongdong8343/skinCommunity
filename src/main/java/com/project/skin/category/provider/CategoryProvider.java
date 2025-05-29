@@ -16,6 +16,10 @@ import org.springframework.stereotype.Component;
 public class CategoryProvider {
     private final CategoryRepository categoryRepository;
 
+    public List<Category> getParentCategories() {
+        return categoryRepository.findCategoriesByParentIsNullAndDeletedAtIsNull();
+    }
+
     public List<Category> getCategoriesByParentId(Long parentId) {
         return categoryRepository.findByParentIdNullable(parentId);
     }

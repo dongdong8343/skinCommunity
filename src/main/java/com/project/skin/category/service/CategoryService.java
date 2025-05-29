@@ -5,13 +5,13 @@ import java.util.List;
 import java.util.Objects;
 
 import com.project.skin.category.service.dto.AddCategory;
-import com.project.skin.category.service.dto.CategoryList;
+import com.project.skin.category.service.dto.ParentCategoryList;
+import com.project.skin.category.service.dto.SubCategoryList;
 import com.project.skin.category.service.dto.ReOrderCategory;
 import com.project.skin.category.service.dto.UpdateCategory;
 import com.project.skin.category.entity.Category;
 import com.project.skin.category.provider.CategoryProvider;
 import com.project.skin.category.validator.CreateCategoryValidate;
-import com.project.skin.global.error.exception.DuplicateCategoryCodeException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -27,10 +27,17 @@ public class CategoryService {
 	private final CreateCategoryValidate createCategoryValidate;
 
 	@Transactional(readOnly = true)
-	public CategoryList.Response getCategories(Long parentId) {
+	public ParentCategoryList.Response getParentCategories() {
+		List<Category> categories = categoryProvider.getParentCategories();
+
+		return ParentCategoryList.toCategoryList(categories);
+	}
+
+	@Transactional(readOnly = true)
+	public SubCategoryList.Response getCategories(Long parentId) {
 		List<Category> categories = categoryProvider.getCategoriesByParentId(parentId);
 
-		return CategoryList.toCategoryList(categories);
+		return SubCategoryList.toCategoryList(categories);
 	}
 
 	@Transactional
@@ -96,10 +103,8 @@ public class CategoryService {
 		// request 순환하면서 해당 id에 맞는 카테고리 찾아온다.
 		// 해당 카테고리의 순서를 수정한다.
 		for (ReOrderCategory.OrderItem orderItem : request.getOrderItems()) {
-			log.info("카테고리 가져오기");
 			Category category = categoryProvider.findCategoryByIdOrThrow(orderItem.getId());
 
-			log.info("수정 시작");
 			category.updateCategoryOrder(orderItem.getNewOrder());
 
 			ids.add(orderItem.getId());
