@@ -1,0 +1,125 @@
+package com.project.skin.category.service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+import com.project.skin.category.service.dto.AddCategory;
+import com.project.skin.category.service.dto.ParentCategoryList;
+import com.project.skin.category.service.dto.SubCategoryList;
+import com.project.skin.category.service.dto.ReOrderCategory;
+import com.project.skin.category.service.dto.UpdateCategory;
+import com.project.skin.category.entity.Category;
+import com.project.skin.category.provider.CategoryProvider;
+import com.project.skin.category.validator.CreateCategoryValidate;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Log4j2
+@RequiredArgsConstructor
+@Service
+public class CategoryService {
+	private final CategoryProvider categoryProvider;
+	private final CreateCategoryValidate createCategoryValidate;
+
+	@Transactional(readOnly = true)
+	public ParentCategoryList.Response getParentCategories() {
+		List<Category> categories = categoryProvider.getParentCategories();
+
+		return ParentCategoryList.toCategoryList(categories);
+	}
+
+	@Transactional(readOnly = true)
+	public SubCategoryList.Response getCategories(Long parentId) {
+		List<Category> categories = categoryProvider.getCategoriesByParentId(parentId);
+
+		return SubCategoryList.toCategoryList(categories);
+	}
+
+	@Transactional
+	public AddCategory.Response saveCategory(AddCategory.Request request) {
+		// 카테고리 중복 검사
+		createCategoryValidate.validateCategoryCode(request.getCode());
+
+		// 부모 카테고리 찾기
+		Category parentCategory = categoryProvider.findCategoryByIdOrNull(request.getParentId());
+		Category childCategory = null;
+
+		Category entity = request.toEntity();
+
+		if (Objects.isNull(parentCategory)) { // 부모 카테고리 없는 경우 부모 카테고리 생성
+			parentCategory = entity;
+		} else { // 부모 카테고리 있는 경우 자식 카테고리 생성
+			childCategory = entity;
+			parentCategory.addSubCategory(childCategory);
+		}
+
+		categoryProvider.saveCategory(parentCategory);
+
+		Long categoryId = Objects.isNull(childCategory) ? parentCategory.getId() : childCategory.getId();
+
+		// 새로 만들어진 카테고리의 아이디 반환 -> 자식 카테고리를 저장하는 경우 db에는 저장이 되는데 id가 null로 반환됨...
+		return AddCategory.Response.builder()
+			.categoryId(categoryId)
+			.build();
+	}
+
+	@Transactional
+	public UpdateCategory.Response updateCategory(Long categoryId, UpdateCategory.Request request) {
+		categoryProvider.findCategoryByCode(request.getCode());
+
+		Category category = categoryProvider.findCategoryByIdOrThrow(categoryId);
+
+		// parentId로 newParent 찾기
+		Category newParent = null;
+		if(Objects.nonNull(request.getParentId())) {
+			newParent = categoryProvider.findCategoryByIdOrThrow(request.getParentId());
+		}
+
+		category.update(request.getName(), request.getCode(), request.getShowSkinFilter());
+
+		// parentId가 null이 아니고 기존 부모 id와 다른 경우 부모 - 자식 관계 수정
+		if (Objects.nonNull(newParent) && !Objects.equals(newParent.getId(), category.getParent().getId())) {
+			Category oldParent = category.getParent();
+
+			oldParent.getChildren().removeIf(child -> Objects.equals(child.getId(), categoryId));
+
+			newParent.addSubCategory(category);
+		}
+
+		return UpdateCategory.Response.builder()
+			.id(category.getId())
+			.build();
+	}
+
+	@Transactional
+	public ReOrderCategory.Response reOrderCategories(ReOrderCategory.Request request) {
+		List<Long> ids = new ArrayList<>();
+
+		// request 순환하면서 해당 id에 맞는 카테고리 찾아온다.
+		// 해당 카테고리의 순서를 수정한다.
+		for (ReOrderCategory.OrderItem orderItem : request.getOrderItems()) {
+			Category category = categoryProvider.findCategoryByIdOrThrow(orderItem.getId());
+
+			category.updateCategoryOrder(orderItem.getNewOrder());
+
+			ids.add(orderItem.getId());
+		}
+
+		return ReOrderCategory.Response.builder()
+			.ids(ids)
+			.build();
+	}
+
+	@Transactional
+	public void deleteCategory(Long id) {
+		Category category = categoryProvider.findCategoryByIdOrThrow(id);
+
+		category.delete();
+	}
+
+}
